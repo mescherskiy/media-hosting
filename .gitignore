@@ -34,3 +34,4 @@ build/
 
 ### App properties ###
 resources/application.yml
+application.yml
