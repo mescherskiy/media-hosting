@@ -188,7 +188,14 @@ public class JwtService {
 //    }
 
     private ResponseCookie generateCookie(String name, String value, String path, int expirationMs) {
-        return ResponseCookie.from(name, value).path(path).maxAge(expirationMs/100).httpOnly(true).sameSite("none").build();
+        return ResponseCookie
+                .from(name, value)
+                .path(path)
+                .maxAge(expirationMs/100)
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(false)
+                .build();
     }
 
     private String getCookieValueByName(HttpServletRequest request, String name) {
