@@ -120,7 +120,8 @@ public class JwtService {
         Cookie cookie = new Cookie(accessTokenCookieName, null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         cookie.setPath("/api");
         return cookie;
     }
@@ -133,7 +134,8 @@ public class JwtService {
         Cookie cookie = new Cookie(refreshTokenCookieName, null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
         cookie.setPath("/api");
         return cookie;
     }
@@ -195,8 +197,8 @@ public class JwtService {
                 .path(path)
                 .maxAge(expirationMs/100)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Strict")
+                .sameSite("None")
+                .secure(true)
                 .build();
     }
 
