@@ -48,6 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 && !request.getServletPath().endsWith("/signup")) {
             try {
                 String jwt = parseJWT(request);
+                logger.info("JWT 1: " + jwt);
                 if (jwt != null && jwtService.isTokenValid(jwt)) {
                     String username = jwtService.getUsernameFromJWT(jwt);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -85,6 +86,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+        logger.info("JWT 2: " + jwtService.getAccessTokenFromCookies(request));
     }
 
     private String parseJWT(HttpServletRequest request) {
