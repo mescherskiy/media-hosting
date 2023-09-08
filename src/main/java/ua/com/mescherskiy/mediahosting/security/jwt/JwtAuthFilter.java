@@ -42,6 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        logger.info("Request path: " + request.getServletPath());
         if (!request.getServletPath().endsWith("/signin")
                 && !request.getServletPath().endsWith("/refreshtoken")
                 && !request.getServletPath().endsWith("/test/all")
