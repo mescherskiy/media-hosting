@@ -1,6 +1,8 @@
 package ua.com.mescherskiy.mediahosting.security.services;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
     public Boolean register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             return false;
@@ -64,6 +68,8 @@ public class AuthenticationService {
     }
 
     public JwtCookieResponse authenticate(AuthenticationRequest request) {
+        logger.info("Username " + request.getEmail());
+        logger.info("Password " + request.getPassword());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -72,6 +78,7 @@ public class AuthenticationService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        logger.info("Userdetails Email: " + userDetails.getEmail());
         ResponseCookie jwtCookie = jwtService.generateAccessTokenCookie(userDetails);
         //String token = jwtService.generateJWT(userDetails);
         List<String> roles = userDetails.getAuthorities().stream()
