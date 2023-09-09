@@ -56,7 +56,7 @@ public class PhotoService {
     public List<PhotoResponse> generateAllUserPhotoUrls(String username) {
         List<Photo> photos = photoRepository.findAllByUser_Email(username);
         return photos.stream().map(photo -> new PhotoResponse(
-                "http://localhost:8080/api/vault/" + username + "/" + photo.getId(),
+                "https://mescherskiy.github.io/api/vault/" + username + "/" + photo.getId(),
                 photo.getWidth(), photo.getHeight())).toList();
     }
 

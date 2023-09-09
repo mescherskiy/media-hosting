@@ -42,14 +42,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        logger.info("Request path: " + request.getServletPath());
         if (!request.getServletPath().endsWith("/signin")
                 && !request.getServletPath().endsWith("/refreshtoken")
                 && !request.getServletPath().endsWith("/test/all")
                 && !request.getServletPath().endsWith("/signup")) {
             try {
                 String jwt = parseJWT(request);
-                logger.info("JWT 1: " + jwt);
                 if (jwt != null && jwtService.isTokenValid(jwt)) {
                     String username = jwtService.getUsernameFromJWT(jwt);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -87,7 +85,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-        logger.info("JWT 2: " + jwtService.getAccessTokenFromCookies(request));
     }
 
     private String parseJWT(HttpServletRequest request) {

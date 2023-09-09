@@ -68,8 +68,6 @@ public class AuthenticationService {
     }
 
     public JwtCookieResponse authenticate(AuthenticationRequest request) {
-        logger.info("Username " + request.getEmail());
-        logger.info("Password " + request.getPassword());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -78,7 +76,6 @@ public class AuthenticationService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        logger.info("Userdetails Email: " + userDetails.getEmail());
         ResponseCookie jwtCookie = jwtService.generateAccessTokenCookie(userDetails);
         //String token = jwtService.generateJWT(userDetails);
         List<String> roles = userDetails.getAuthorities().stream()
