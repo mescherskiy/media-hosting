@@ -59,7 +59,7 @@ public class PhotoService {
     public List<PhotoResponse> generateAllUserPhotoUrls(String username) {
         List<Photo> photos = photoRepository.findAllByUser_Email(username);
         return photos.stream().map(photo -> new PhotoResponse(
-                "https://mescherskiy.github.io/api/vault/" + username + "/" + photo.getId(),
+                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + username + "/" + photo.getId(),
                 photo.getWidth(), photo.getHeight())).toList();
     }
 
