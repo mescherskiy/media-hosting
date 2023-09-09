@@ -3,6 +3,8 @@ package ua.com.mescherskiy.mediahosting.services;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.imgscalr.Scalr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.aws.Bucket;
@@ -32,6 +34,7 @@ public class PhotoService {
     private final UserRepository userRepository;
     private final ThumbnailRepository thumbnailRepository;
     private final FileStore fileStore;
+    private final static Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
     public List<Photo> getAllUserPhotosByUserId(Long id) {
         return photoRepository.findAllByUserId(id);
@@ -165,6 +168,7 @@ public class PhotoService {
         String key = "";
         if (user != null && user.getPhotos().stream().anyMatch(photo -> photo.getId().equals(photoId))) {
             key = photoRepository.findById(photoId).get().getFileName();
+            logger.info("Photo path+key: " + path+key);
             return fileStore.download(path, key);
         }
         return new byte[0];
