@@ -114,6 +114,8 @@ public class SecurityConfig {
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
         ));
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("*");
 //        configuration.setAllowedHeaders(List.of(
 //                HttpHeaders.CONTENT_TYPE,
 //                HttpHeaders.AUTHORIZATION
