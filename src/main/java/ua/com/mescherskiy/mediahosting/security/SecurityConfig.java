@@ -112,7 +112,9 @@ public class SecurityConfig {
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()
+                HttpMethod.OPTIONS.name(),
+                HttpMethod.PATCH.name(),
+                HttpMethod.HEAD.name()
         ));
         configuration.setAllowedHeaders(List.of(
                 HttpHeaders.CONTENT_TYPE,
@@ -125,9 +127,15 @@ public class SecurityConfig {
                 HttpHeaders.USER_AGENT,
                 HttpHeaders.CONNECTION,
                 HttpHeaders.PRAGMA,
-                HttpHeaders.CACHE_CONTROL
+                HttpHeaders.CACHE_CONTROL,
+                HttpHeaders.COOKIE
+
         ));
         configuration.setExposedHeaders(List.of(
+                HttpHeaders.AUTHORIZATION,
+                HttpHeaders.COOKIE,
+                HttpHeaders.ALLOW,
+                HttpHeaders.ACCEPT,
                 HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
                 HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
                 HttpHeaders.ACCESS_CONTROL_MAX_AGE,
