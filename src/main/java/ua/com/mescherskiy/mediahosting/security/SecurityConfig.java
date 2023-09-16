@@ -114,19 +114,26 @@ public class SecurityConfig {
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
         ));
-        configuration.addAllowedHeader("*");
-        configuration.addExposedHeader("*");
-//        configuration.setAllowedHeaders(List.of(
-//                HttpHeaders.CONTENT_TYPE,
-//                HttpHeaders.AUTHORIZATION
-//        ));
-//        configuration.setExposedHeaders(List.of(
-//                HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
-//                HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
-//                HttpHeaders.ACCESS_CONTROL_MAX_AGE,
-//                HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
-//                HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN
-//        ));
+        configuration.setAllowedHeaders(List.of(
+                HttpHeaders.CONTENT_TYPE,
+                HttpHeaders.AUTHORIZATION,
+                HttpHeaders.ACCEPT,
+                HttpHeaders.ACCEPT_LANGUAGE,
+                HttpHeaders.ACCEPT_ENCODING,
+                HttpHeaders.HOST,
+                HttpHeaders.ORIGIN,
+                HttpHeaders.USER_AGENT,
+                HttpHeaders.CONNECTION,
+                HttpHeaders.PRAGMA,
+                HttpHeaders.CACHE_CONTROL
+        ));
+        configuration.setExposedHeaders(List.of(
+                HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+                HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
+                HttpHeaders.ACCESS_CONTROL_MAX_AGE,
+                HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+                HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN
+        ));
 
         configuration.setAllowCredentials(true);
 
