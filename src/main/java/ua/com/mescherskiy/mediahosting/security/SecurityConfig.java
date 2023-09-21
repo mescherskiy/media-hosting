@@ -105,7 +105,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000",
-                "https://media-hosting-beedbd9a2f9f.herokuapp.com",
+                "https://media-hosting-frontend-f78dea537f96.herokuapp.com",
                 "https://mescherskiy.github.io"));
         configuration.setAllowedMethods(List.of(
                 HttpMethod.GET.name(),
