@@ -105,7 +105,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000",
-                "https://media-hosting-frontend-f78dea537f96.herokuapp.com",
                 "https://media-hosting-beedbd9a2f9f.herokuapp.com",
                 "https://mescherskiy.github.io"));
         configuration.setAllowedMethods(List.of(
@@ -113,30 +112,14 @@ public class SecurityConfig {
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name(),
-                HttpMethod.PATCH.name(),
-                HttpMethod.HEAD.name()
+                HttpMethod.OPTIONS.name()
         ));
         configuration.setAllowedHeaders(List.of(
                 HttpHeaders.CONTENT_TYPE,
-                HttpHeaders.AUTHORIZATION,
-                HttpHeaders.ACCEPT,
-                HttpHeaders.ACCEPT_LANGUAGE,
-                HttpHeaders.ACCEPT_ENCODING,
-                HttpHeaders.HOST,
-                HttpHeaders.ORIGIN,
-                HttpHeaders.USER_AGENT,
-                HttpHeaders.CONNECTION,
-                HttpHeaders.PRAGMA,
-                HttpHeaders.CACHE_CONTROL,
-                HttpHeaders.COOKIE
+                HttpHeaders.AUTHORIZATION
 
         ));
         configuration.setExposedHeaders(List.of(
-                HttpHeaders.AUTHORIZATION,
-                HttpHeaders.COOKIE,
-                HttpHeaders.ALLOW,
-                HttpHeaders.ACCEPT,
                 HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
                 HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
                 HttpHeaders.ACCESS_CONTROL_MAX_AGE,
@@ -145,6 +128,7 @@ public class SecurityConfig {
         ));
 
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
