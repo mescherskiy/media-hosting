@@ -29,12 +29,8 @@ aws:
     secretKey: ${AWS_S3_SECRETKEY}
 
 jwt:
-  secretKey: 51655468576D5A7134743677397A24432646294A404E635266556A586E327235
+  secretKey: ${JWT_SECRETKEY}
   accessTokenCookieName: mh-jwt-access
   accessTokenExpirationMs: 300000
   refreshTokenCookieName: mh-jwt-refresh
   refreshTokenExpirationMs: 1800000
-
-server:
-  servlet:
-    context-path: /api
