@@ -87,7 +87,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/api/vault/*/*").permitAll()
-                //.requestMatchers("/api/vault/**").permitAll()
+                .requestMatchers("/static/**", "/index.html", "/").permitAll()
                 .anyRequest().authenticated()
                 .and()
 //                .oauth2Login(Customizer.withDefaults())
