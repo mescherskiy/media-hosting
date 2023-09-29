@@ -2,7 +2,6 @@ package ua.com.mescherskiy.mediahosting.services;
 
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
-import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.aws.Bucket;
 import ua.com.mescherskiy.mediahosting.aws.FileStore;
 import ua.com.mescherskiy.mediahosting.models.Photo;
-import ua.com.mescherskiy.mediahosting.models.Thumbnail;
 import ua.com.mescherskiy.mediahosting.models.User;
 import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
 import ua.com.mescherskiy.mediahosting.repo.PhotoRepository;
@@ -23,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.apache.http.entity.ContentType.*;
 
@@ -32,29 +29,28 @@ import static org.apache.http.entity.ContentType.*;
 public class PhotoService {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
-    private final ThumbnailRepository thumbnailRepository;
     private final FileStore fileStore;
     private final static Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
-    public List<Photo> getAllUserPhotosByUserId(Long id) {
-        return photoRepository.findAllByUserId(id);
-    }
-
-    public List<Photo> getAllUserPhotosByUser(User user) {
-        return photoRepository.findAllByUser(user);
-    }
-
-    public List<Photo> getAllUserPhotosByUserEmail(String email) {return photoRepository.findAllByUser_Email(email);}
-
-    public List<String> getAllUserPhotoKeysByUsername(String username) {
-        List<Photo> photos = photoRepository.findAllByUser_Email(username);
-        return photos.stream().map(Photo::getFileName).collect(Collectors.toList());
-    }
-
-    public List<Long> getAllUserPhotoIdsByUsername(String username) {
-        List<Photo> photos = photoRepository.findAllByUser_Email(username);
-        return photos.stream().map(Photo::getId).collect(Collectors.toList());
-    }
+//    public List<Photo> getAllUserPhotosByUserId(Long id) {
+//        return photoRepository.findAllByUserId(id);
+//    }
+//
+//    public List<Photo> getAllUserPhotosByUser(User user) {
+//        return photoRepository.findAllByUser(user);
+//    }
+//
+//    public List<Photo> getAllUserPhotosByUserEmail(String email) {return photoRepository.findAllByUser_Email(email);}
+//
+//    public List<String> getAllUserPhotoKeysByUsername(String username) {
+//        List<Photo> photos = photoRepository.findAllByUser_Email(username);
+//        return photos.stream().map(Photo::getFileName).collect(Collectors.toList());
+//    }
+//
+//    public List<Long> getAllUserPhotoIdsByUsername(String username) {
+//        List<Photo> photos = photoRepository.findAllByUser_Email(username);
+//        return photos.stream().map(Photo::getId).collect(Collectors.toList());
+//    }
 
     public List<PhotoResponse> generateAllUserPhotoUrls(String username) {
         List<Photo> photos = photoRepository.findAllByUser_Email(username);
@@ -63,13 +59,13 @@ public class PhotoService {
                 photo.getWidth(), photo.getHeight())).toList();
     }
 
-    public Optional<Photo> getPhotoByFilenameOrPath(String fileName, String path) {
-        return photoRepository.findByFileNameOrPath(fileName, path);
-    }
-
-    public Optional<Photo> getPhotoById(Long id) {
-        return photoRepository.findById(id);
-    }
+//    public Optional<Photo> getPhotoByFilenameOrPath(String fileName, String path) {
+//        return photoRepository.findByFileNameOrPath(fileName, path);
+//    }
+//
+//    public Optional<Photo> getPhotoById(Long id) {
+//        return photoRepository.findById(id);
+//    }
 
     public void uploadOriginalPhoto(String username, MultipartFile file) throws IOException {
         isFileEmpty(file);
@@ -103,64 +99,64 @@ public class PhotoService {
         fileStore.save(photo.getPath(), photo.getFileName(), Optional.of(metadata), inputStream);
     }
 
-    public void uploadPhotoWithThumbnail(String username, MultipartFile file) throws IOException {
-        isFileEmpty(file);
-        isImage(file);
-        User user = isUserExists(username);
-        Map<String, String> originalMetadata = extractMetadata(file);
-        String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
+//    public void uploadPhotoWithThumbnail(String username, MultipartFile file) throws IOException {
+//        isFileEmpty(file);
+//        isImage(file);
+//        User user = isUserExists(username);
+//        Map<String, String> originalMetadata = extractMetadata(file);
+//        String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
+//
+//        Thumbnail thumbnail;
+//
+//        try {
+//            thumbnail = createThumbnail(file, path);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Cannot create thumbnail!", e);
+//        }
+//
+//        BufferedImage image = ImageIO.read(file.getInputStream());
+//        int width = image.getWidth();
+//        int height = image.getHeight();
+//
+//        Photo photo = Photo.builder()
+//                .fileName(file.getOriginalFilename())
+//                .path(path)
+//                .uploadDate(new Date())
+//                .user(user)
+//                .height(height)
+//                .width(width)
+//                .build();
+//
+//        photo.createThumbnail(thumbnail);
+//        thumbnail.setOriginalPhoto(photo);
+//
+//        Map<String, String> thumbnailMetadata = extractMetadata(thumbnail.getBytes());
+//
+//        try {
+//            photoRepository.save(photo);
+//            thumbnailRepository.save(thumbnail);
+//            fileStore.save(photo.getPath(), photo.getFileName(), Optional.of(originalMetadata), file.getInputStream());
+//            fileStore.save(thumbnail.getPath(), thumbnail.getFileName(), Optional.of(thumbnailMetadata), new ByteArrayInputStream(thumbnail.getBytes()));
+//        } catch (IOException e) {
+//            throw new IllegalStateException(e);
+//        }
+//    }
 
-        Thumbnail thumbnail;
-
-        try {
-            thumbnail = createThumbnail(file, path);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot create thumbnail!", e);
-        }
-
-        BufferedImage image = ImageIO.read(file.getInputStream());
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        Photo photo = Photo.builder()
-                .fileName(file.getOriginalFilename())
-                .path(path)
-                .uploadDate(new Date())
-                .user(user)
-                .height(height)
-                .width(width)
-                .build();
-
-        photo.createThumbnail(thumbnail);
-        thumbnail.setOriginalPhoto(photo);
-
-        Map<String, String> thumbnailMetadata = extractMetadata(thumbnail.getBytes());
-
-        try {
-            photoRepository.save(photo);
-            thumbnailRepository.save(thumbnail);
-            fileStore.save(photo.getPath(), photo.getFileName(), Optional.of(originalMetadata), file.getInputStream());
-            fileStore.save(thumbnail.getPath(), thumbnail.getFileName(), Optional.of(thumbnailMetadata), new ByteArrayInputStream(thumbnail.getBytes()));
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public Thumbnail createThumbnail (MultipartFile originalFile, String path) throws IOException {
-        BufferedImage originalImage = ImageIO.read(originalFile.getInputStream());
-        BufferedImage thumbnailImage = Scalr.resize(originalImage, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_TO_WIDTH,
-                100, 100, Scalr.OP_ANTIALIAS);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(thumbnailImage, "jpg", baos);
-
-        return Thumbnail.builder()
-                .bytes(baos.toByteArray())
-                .fileName("thumbnail_" + originalFile.getOriginalFilename())
-                .path(path)
-                .uploadDate(new Date())
-                .build();
-    }
+//    public Thumbnail createThumbnail (MultipartFile originalFile, String path) throws IOException {
+//        BufferedImage originalImage = ImageIO.read(originalFile.getInputStream());
+//        BufferedImage thumbnailImage = Scalr.resize(originalImage, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_TO_WIDTH,
+//                100, 100, Scalr.OP_ANTIALIAS);
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(thumbnailImage, "jpg", baos);
+//
+//        return Thumbnail.builder()
+//                .bytes(baos.toByteArray())
+//                .fileName("thumbnail_" + originalFile.getOriginalFilename())
+//                .path(path)
+//                .uploadDate(new Date())
+//                .build();
+//    }
 
     public byte[] downloadOriginalPhoto(String username, Long photoId) {
         User user = isUserExists(username);
@@ -205,15 +201,15 @@ public class PhotoService {
         return metadata;
     }
 
-    private Map<String, String> extractMetadata(byte[] bytes) {
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("Content-Length", String.valueOf(bytes.length));
-        return metadata;
-    }
-
-    private User isUserExists(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
-    }
+//    private Map<String, String> extractMetadata(byte[] bytes) {
+//        Map<String, String> metadata = new HashMap<>();
+//        metadata.put("Content-Length", String.valueOf(bytes.length));
+//        return metadata;
+//    }
+//
+//    private User isUserExists(Long userId) {
+//        return userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
+//    }
 
     private User isUserExists(String username) {
         return userRepository.findByEmail(username).orElseThrow(() -> new IllegalStateException("User not found"));
