@@ -34,3 +34,6 @@ jwt:
   accessTokenExpirationMs: 300000
   refreshTokenCookieName: mh-jwt-refresh
   refreshTokenExpirationMs: 1800000
+
+server:
+  port: ${PORT:8080}
