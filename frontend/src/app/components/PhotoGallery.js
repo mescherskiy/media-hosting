@@ -12,9 +12,9 @@ const PhotoGallery = () => {
 
     const [open, setOpen] = useState(false)
     const [index, setIndex] = useState(0)
-    const { data: userPhotos, isFetching, isLoading} = useGetUserPhotosQuery(username);
+    const { data: userPhotos, isFetching, isLoading } = useGetUserPhotosQuery(username);
 
-
+    const [selectedPhotos, setSelectedPhotos] = useState([]);
 
     const handlePhotoClick = (data) => {
         setOpen(true)
@@ -31,16 +31,26 @@ const PhotoGallery = () => {
         setOpen(false)
     }
 
+    const handleToggleSelection = (index) => {
+        if (selectedPhotos.includes(index)) {
+            setSelectedPhotos((prevSelectedPhotos) =>
+                prevSelectedPhotos.filter((photoIndex) => photoIndex !== index));
+        } else {
+            setSelectedPhotos((prevSelectedPhotos) => [...prevSelectedPhotos, index]);
+        }
+    }
+
     if (isFetching || isLoading) { return <div>Loading...</div> }
 
     if (!userPhotos || userPhotos.length === 0) {
         return <div>...</div>
     }
 
-    const photos = userPhotos.map(photo => ({
+    const photos = userPhotos.map((photo, index) => ({
         src: `${photo.url}?size=full`,
         width: photo.width,
         height: photo.height,
+        isSelected: selectedPhotos.includes(index)
     }))
 
     return (
@@ -48,17 +58,36 @@ const PhotoGallery = () => {
             <PhotoAlbum
                 layout="rows"
                 photos={photos}
-                onClick={handlePhotoClick} 
+                onClick={handlePhotoClick}
                 spacing={8}
-
-                />
+                renderPhoto={({ src, isSelected }, index) => (
+                    <div className={`photo-item ${isSelected ? "selected" : ""}`}>
+                        <img
+                            src={src}
+                            alt={`Photo ${index + 1}`}
+                        />
+                        <div className="photo-overlay">
+                            <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            fill="white" 
+                            viewBox="0 0 24 24" 
+                            strokeWidth="1.5" 
+                            stroke="currentColor" 
+                            className={`w-6 h-6 select-icon ${isSelected ? "selected" : ""}`}
+                            onClick={handleToggleSelection(index)}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                )}
+            />
             <GooglePhoto
                 open={open}
                 src={photos}
                 srcIndex={index}
                 onChangeIndex={handleChangeIndex}
                 onClose={handleClose}
-                />
+            />
         </div>
     );
 }
