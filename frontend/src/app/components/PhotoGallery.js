@@ -60,13 +60,9 @@ const PhotoGallery = () => {
                 photos={photos}
                 onClick={handlePhotoClick}
                 spacing={8}
-                renderPhoto={({ layout, imageProps: {style, isSelected, ...restImageProps}}) => (
-                    <div className={`photo-item ${isSelected ? "selected" : ""}`}>
-                        <img
-                            style={{...style, width: "100%", height: "auto"}}
-                            alt={`Photo ${layout.index + 1}`}
-                            {...restImageProps}
-                        />
+                renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto, layout }) => (
+                    <div style={{position: "relative", ...wrapperStyle}}>
+                        {renderDefaultPhoto({wrapped: true})}
                         <div className="photo-overlay">
                             <svg 
                             xmlns="http://www.w3.org/2000/svg" 
@@ -74,7 +70,7 @@ const PhotoGallery = () => {
                             viewBox="0 0 24 24" 
                             strokeWidth="1.5" 
                             stroke="currentColor" 
-                            className={`w-6 h-6 select-icon ${isSelected ? "selected" : ""}`}
+                            className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
                             onClick={() => handleToggleSelection(layout.index)}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
