@@ -479,11 +479,6 @@ section.main {
   display: none;
 }
 
-.photo-item {
-  position: relative;
-  display: inline-block;
-}
-
 .photo-image {
   width: 100%; /* Сделаем изображение 100% ширины контейнера */
   height: auto;
@@ -503,21 +498,27 @@ section.main {
   transition: opacity 0.3s ease; /* Плавное появление при наведении */
 }
 
+.photo-overlay.selected {
+  opacity: 1;
+}
+
 .photo-item:hover .photo-overlay {
   opacity: 1; /* Показать оверлей при наведении */
 }
 
 .select-icon {
-  width: 32px;
-  height: 32px;
-  filter: brightness(0.7); /* Уменьшим яркость иконки меню */
+  width: 24px;
+  height: 24px;
+  margin: 2%;
+  filter: opacity(0.5); /* Уменьшим яркость иконки меню */
   transition: filter 0.2s ease; /* Плавное изменение яркости */
 }
 
 .select-icon:hover {
-  filter: brightness(0.9); /* Увеличим яркость при наведении */
+  filter: opacity(0.7); /* Увеличим яркость при наведении */
 }
 
 .select-icon.selected {
-  filter: brightness(1); /* Увеличим яркость при наведении */
+  fill: var(--blue);
+  filter: opacity(1) /* Увеличим яркость при наведении */
 }
