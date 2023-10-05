@@ -63,7 +63,7 @@ const PhotoGallery = () => {
                 renderPhoto={({ layout, imageProps: {style, isSelected, ...restImageProps}}) => (
                     <div className={`photo-item ${isSelected ? "selected" : ""}`}>
                         <img
-                            style={style}
+                            style={{...style, width: "100%", height: "auto"}}
                             alt={`Photo ${layout.index + 1}`}
                             {...restImageProps}
                         />
