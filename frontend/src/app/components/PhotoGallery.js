@@ -60,10 +60,10 @@ const PhotoGallery = () => {
                 photos={photos}
                 onClick={handlePhotoClick}
                 spacing={8}
-                renderPhoto={({ layout, imageProps: {isSelected, ...restImageProps}}) => (
+                renderPhoto={({ layout, imageProps: {style, isSelected, ...restImageProps}}) => (
                     <div className={`photo-item ${isSelected ? "selected" : ""}`}>
                         <img
-                            
+                            style={style}
                             alt={`Photo ${layout.index + 1}`}
                             {...restImageProps}
                         />
