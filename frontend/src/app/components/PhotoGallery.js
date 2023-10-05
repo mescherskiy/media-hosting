@@ -60,11 +60,12 @@ const PhotoGallery = () => {
                 photos={photos}
                 onClick={handlePhotoClick}
                 spacing={8}
-                renderPhoto={({ photo, layout }) => (
-                    <div className={`photo-item ${photo.isSelected ? "selected" : ""}`}>
+                renderPhoto={({ layout, imageProps: {isSelected, ...restImageProps}}) => (
+                    <div className={`photo-item ${isSelected ? "selected" : ""}`}>
                         <img
-                            src={photo.src}
+                            
                             alt={`Photo ${layout.index + 1}`}
+                            {...restImageProps}
                         />
                         <div className="photo-overlay">
                             <svg 
@@ -73,7 +74,7 @@ const PhotoGallery = () => {
                             viewBox="0 0 24 24" 
                             strokeWidth="1.5" 
                             stroke="currentColor" 
-                            className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
+                            className={`w-6 h-6 select-icon ${isSelected ? "selected" : ""}`}
                             onClick={() => handleToggleSelection(layout.index)}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
