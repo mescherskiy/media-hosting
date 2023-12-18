@@ -1,9 +1,12 @@
 package ua.com.mescherskiy.mediahosting.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,13 +35,8 @@ public class User {
 
     private String name;
 
-    @Email
-    @NotBlank
-    @Size(max = 50)
     private String email;
 
-    @NotBlank
-    @Size(max = 120)
     private String pass;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -52,4 +50,8 @@ public class User {
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Photo> photos = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private RefreshToken refreshToken;
 }

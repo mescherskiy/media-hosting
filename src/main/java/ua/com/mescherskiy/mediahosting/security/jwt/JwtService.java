@@ -19,7 +19,9 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.util.WebUtils;
 import ua.com.mescherskiy.mediahosting.exception.AccessTokenExpiredException;
 import ua.com.mescherskiy.mediahosting.models.User;
+import ua.com.mescherskiy.mediahosting.security.services.AuthenticationService;
 import ua.com.mescherskiy.mediahosting.security.services.UserDetailsImpl;
+import ua.com.mescherskiy.mediahosting.security.services.UserDetailsServiceImpl;
 
 import java.security.Key;
 import java.util.Date;
@@ -30,6 +32,8 @@ import java.util.Date;
 public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+    private UserDetailsServiceImpl userDetailsService;
     @Value("${jwt.secretKey}")
     private String jwtSecretKey;
 
@@ -88,8 +92,6 @@ public class JwtService {
 //        return generateJWTFromUsername(userPrincipal.getUsername());
 //    }
 
-
-
     public ResponseCookie generateAccessTokenCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateJWTFromUsername(userPrincipal.getUsername());
         return generateCookie(accessTokenCookieName, jwt, "/api", accessTokenExpirationMs);
@@ -138,6 +140,11 @@ public class JwtService {
         cookie.setAttribute("SameSite", "Strict");
         cookie.setPath("/api");
         return cookie;
+    }
+
+    public UserDetailsImpl extractUserDetailsFromToken(String token) {
+        String username = getUsernameFromJWT(token);
+        return (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
     }
 
     public String getUsernameFromJWT(String token) {

@@ -1,7 +1,10 @@
 package ua.com.mescherskiy.mediahosting.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
@@ -16,6 +19,8 @@ import java.util.List;
 public class PhotoController {
 
     private final PhotoService photoService;
+
+    private final static Logger logger = LoggerFactory.getLogger(PhotoController.class);
 
 //    @GetMapping("/{username}")
 //    public List<String> getAllUserPhotoKeys(@PathVariable("username") String userEmail) {
@@ -57,5 +62,12 @@ public class PhotoController {
         } else {
             throw new IllegalArgumentException("Invalid photo size");
         }
+    }
+
+    @PostMapping("/{username}/delete")
+    public void deletePhotos(@PathVariable("username") String username, @RequestBody List<Long> photoIds) {
+        logger.info("Received request to delete photos for user: " + username);
+        logger.info("Photo IDs to delete: " + photoIds);
+        photoService.deletePhotos(username, photoIds);
     }
 }

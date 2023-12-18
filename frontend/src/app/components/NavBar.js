@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDropzone } from "react-dropzone";
@@ -8,18 +8,28 @@ import { selectCurrentUser } from "../slices/authSlice";
 
 const NavBar = () => {
 
-  const [logout] = useLogoutMutation();
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [logoutMutation, logoutMutationResult] = useLogoutMutation()
+
+  const navigate = useNavigate();
+  // const [logout, response] = useLogoutMutation();
+  // const [showAdminBoard, setShowAdminBoard] = useState(false);
   const user = useSelector(selectCurrentUser);
   const [uploadPhoto] = useUploadPhotoMutation();
 
-  useEffect(() => {
-    if (user) {
-      setShowAdminBoard(user.roles.includes("ROLE_ADMIN"))
-    } else {
-      setShowAdminBoard(false)
+  const handleLogout = async () => {
+    try {
+      await logoutMutation()
+      
+    } catch (error) {
+      console.error("Logout error: ", error)
     }
-  }, [user])
+  }
+
+  useEffect(() => {
+    if (logoutMutationResult.isSuccess) {
+      navigate("/")
+    }
+  }, [logoutMutationResult.isSuccess, navigate])
 
   return (
     <>
@@ -58,7 +68,7 @@ const NavBar = () => {
                   </div>
                 </div>
               </NavLink>
-              <a href="/" onClick={logout}>
+              <a href="/" onClick={handleLogout}>
                 <div className="iconDiv nav-item" tooltip="Log out" tabIndex="0">
                   <div className="iconSVG">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="white" className="w-6 h-6">

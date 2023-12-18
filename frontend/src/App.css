@@ -467,6 +467,13 @@ section.main {
   border: 2px dashed #9598ee;
   background-color: #7b7ec6;
   margin: 1.5rem 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.dropzone.disabled {
+  background-color: #8183a8;
+  color: rgb(67, 67, 67);
 }
 
 .dropzone p {
@@ -479,8 +486,14 @@ section.main {
   display: none;
 }
 
+.progress.progress-bar {
+  border-radius: 0;
+  position: absolute;
+  bottom: 0;
+}
+
 .photo-image {
-  width: 100%; /* Сделаем изображение 100% ширины контейнера */
+  width: 100%;
   height: auto;
 }
 
@@ -490,13 +503,13 @@ section.main {
   left: 0;
   width: 100%;
   height: 20%;
-  background: rgb(0,0,0);
-  background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
+  background: rgb(0, 0, 0);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transition: opacity 0.3s ease; /* Плавное появление при наведении */
+  transition: opacity 0.3s ease;
 }
 
 .photo-overlay.selected {
@@ -504,22 +517,176 @@ section.main {
 }
 
 .photo-item:hover .photo-overlay {
-  opacity: 1; /* Показать оверлей при наведении */
+  opacity: 1;
 }
 
 .select-icon {
   width: 24px;
   height: 24px;
   margin: 2%;
-  filter: opacity(0.5); /* Уменьшим яркость иконки меню */
-  transition: filter 0.2s ease; /* Плавное изменение яркости */
+  filter: opacity(0.5);
+  transition: filter 0.2s ease;
 }
 
 .select-icon:hover {
-  filter: opacity(0.7); /* Увеличим яркость при наведении */
+  filter: opacity(0.7);
 }
 
 .select-icon.selected {
   fill: var(--bs-blue);
-  filter: opacity(1) /* Увеличим яркость при наведении */
+  filter: opacity(1);
+  stroke: white;
+}
+
+
+
+.sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-container {
+  background-color: #00000070;
+  border-radius: 10px;
+  padding: 4px 10px;
+  /* transition: width 0.3s ease-in-out; */
+  position: fixed;
+  right: 0;
+  /* transition: width 0.3s ease; */
+  -webkit-animation: fadeInItem 0.6s both;
+  animation: fadeInItem 0.6s both;
+  opacity: 0;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-listItem {
+  display: flex;
+  align-items: center;
+  -webkit-animation: fadeInItem 0.6s forwards;
+  animation: fadeInItem 0.6s forwards;
+  transition: background 0.2s ease-in;
+  transform: translatex(-16px);
+  opacity: 0;
+  padding: 8px 0;
+  position: relative;
+}
+
+.sidebar-listItem span {
+  visibility: hidden;
+}
+
+.sidebar-listItem button {
+  background-color: #495794;
+  border: none;
+}
+
+.sidebar-listItem button:hover {
+  background-color: #596ab4;
+}
+
+.sidebar-listItem:hover .sidebar-listItemText {
+  display: inline-block;
+  opacity: 1;
+  left: calc(100% + 8px);
+  visibility: visible;
+}
+
+.sidebar-listItem+li {
+  border-top: 1px solid #f9f8fb30;
+}
+
+.sidebar-listItem button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-listIcon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-listItemText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 20px;
+  position: absolute;
+  padding: 8px;
+  left: 100%;
+  opacity: 0;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: left 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.sidebar-listItem:nth-child(n+1) {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+
+.sidebar-listItem:nth-child(n+2) {
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
+}
+
+.sidebar-listItem:nth-child(n+3) {
+  -webkit-animation-delay: 0.6s;
+  animation-delay: 0.6s;
+}
+
+
+@-webkit-keyframes fadeInItem {
+  100% {
+    transform: translatex(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInItem {
+  100% {
+    transform: translatex(0px);
+    opacity: 1;
+  }
+}
+
+.profile-container {
+  position: relative;
+  width: fit-content;
+  margin: 8rem auto;
+  padding: 4rem 4rem 2rem 4rem;
+  color: white;
+  background-color: #00000070;
+  border-radius: 8px;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  background-color: #ffffff70;
+  border-radius: 50%;
+  position: absolute;
+  overflow: hidden;
+  left: calc(50% - 50px);
+  top: -50px;
+}
+
+.profile-img img {
+  width: 100%;
+}
+
+.profile-container button {
+  width: 100%;
 }

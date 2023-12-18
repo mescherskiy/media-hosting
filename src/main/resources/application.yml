@@ -9,6 +9,9 @@ spring:
     url: jdbc:postgresql://${PROD_DB_HOST}:${PROD_DB_PORT}/${PROD_DB_NAME}
     username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}
+#    url: jdbc:postgresql://localhost:5432/mediahosting
+#    username: postgres
+#    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -27,13 +30,16 @@ aws:
   s3:
     accessKey: ${AWS_S3_ACCESSKEY}
     secretKey: ${AWS_S3_SECRETKEY}
+#    accessKey: "AKIA6FYW4SQKFPNHCMXY"
+#    secretKey: "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"
 
 jwt:
   secretKey: ${JWT_SECRETKEY}
+#  secretKey: 51655468576D5A7134743677397A24432646294A404E635266556A586E327235
   accessTokenCookieName: mh-jwt-access
-  accessTokenExpirationMs: 300000
+  accessTokenExpirationMs: 3000000
   refreshTokenCookieName: mh-jwt-refresh
-  refreshTokenExpirationMs: 1800000
+  refreshTokenExpirationMs: 18000000
 
 server:
   port: ${PORT:8080}

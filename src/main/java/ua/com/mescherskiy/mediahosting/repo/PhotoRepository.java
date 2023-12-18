@@ -13,6 +13,9 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     List<Photo> findAllByUser(User user);
     List<Photo> findAllByUserId(Long userId);
     List<Photo> findAllByUser_Email(String email);
+
+    List<Photo> findAllByUser_EmailOrderByUploadDateDesc(String email);
+    void deleteById (Long id);
     Optional<Photo> findByUser(User user);
     Optional<Photo> findByUser_Id(Long userId);
     Optional<Photo> findByFileNameOrPath(String fileName, String path);

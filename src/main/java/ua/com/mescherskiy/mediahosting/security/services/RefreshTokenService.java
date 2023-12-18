@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.mescherskiy.mediahosting.exception.RefreshTokenException;
 import ua.com.mescherskiy.mediahosting.models.RefreshToken;
-import ua.com.mescherskiy.mediahosting.payload.request.RefreshTokenRequest;
+import ua.com.mescherskiy.mediahosting.models.User;
 import ua.com.mescherskiy.mediahosting.payload.response.MessageResponse;
-import ua.com.mescherskiy.mediahosting.payload.response.RefreshTokenResponse;
 import ua.com.mescherskiy.mediahosting.repo.RefreshTokenRepository;
 import ua.com.mescherskiy.mediahosting.repo.UserRepository;
 import ua.com.mescherskiy.mediahosting.security.jwt.JwtService;
@@ -61,11 +60,17 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public int deleteByUserId(Long userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+    public void deleteByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
     }
 
-    public ResponseEntity<?> refresh(HttpServletRequest request) {
+    @Transactional
+    public void deleteByToken(String token) {
+        System.out.println("Deleting RefreshToken with token: " + token);
+        refreshTokenRepository.deleteByToken(token);
+    }
+
+    public ResponseEntity<MessageResponse> refresh(HttpServletRequest request) {
         String refreshToken = jwtService.getRefreshTokenFromCookies(request);
 
         if ((refreshToken != null) && (refreshToken.length() > 0)) {

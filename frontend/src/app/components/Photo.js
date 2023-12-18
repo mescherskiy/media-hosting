@@ -1,26 +1,31 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { closeSpring } from "./animation"
+// import React, { useState } from "react";
+// import GooglePhoto from "react-google-photo";
+// import { useOutletContext, useParams } from "react-router-dom";
 
-export const Photo = ({
-    id,
-    isSelected,
-    pointOfInterest = 0
-}) => {
-    return (
-        <motion.div
-            className="card-image-container"
-            style={{originX: 0, originY: 0}}>
-                <motion.img
-                    className="card-image"
-                    src=""
-                    alt=""
-                    initial={false}
-                    animate={
-                        isSelected ? { x: -20, y: -20 } : { x: -pointOfInterest, y: 0 }
-                    }
-                    transition={closeSpring}
-                    />
-        </motion.div>
-    )
-}
+// const Photo = () => {
+
+//     const [photos, open, setOpen, index, setIndex, selectedPhotos, setSelectedPhotos, handleChangeIndex, handleClose] = useOutletContext()
+
+//     const { photoId } = useParams()
+
+//     console.log("photos in Photo: ", photos)
+//     console.log("index in Photo: ", index)
+
+//     const photoIndex = photos.findIndex((photo) => photo.id == photoId)
+//     console.log(photoIndex)
+
+//     return (
+//         <div className="photoooo">
+//             <GooglePhoto
+//                 open={open}
+//                 src={photos}
+//                 srcIndex={photoIndex}
+//                 //   onChangeIndex={handleChangeIndex}
+//                 onClose={handleClose}
+//             />
+//         </div>
+
+//     );
+// };
+
+// export default Photo;

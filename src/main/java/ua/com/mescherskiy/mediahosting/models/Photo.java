@@ -41,4 +41,16 @@ public class Photo {
         this.thumbnail = thumbnail;
         thumbnail.setOriginalPhoto(this);
     }
+
+//    @PrePersist
+//    public void prePersist() {
+//        this.fileName = "";
+//    }
+
+    @PostPersist
+    public void postPersist() {
+        if (this.fileName != null) {
+            this.fileName = this.id + "-" + this.fileName;
+        }
+    }
 }

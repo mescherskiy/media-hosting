@@ -1,5 +1,6 @@
 package ua.com.mescherskiy.mediahosting.security.services;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,29 +78,22 @@ public class AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtService.generateAccessTokenCookie(userDetails);
-        //String token = jwtService.generateJWT(userDetails);
+        //find all user's refresh tokens and if they exist - delete them
+        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshTokenService.createRefreshToken(userDetails.getId()).getToken());
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
 
-//        User user = repository.findByEmail(request.getEmail())
-//                .orElseThrow();
-//        Map<String, Object> extraClaims = Map.of("name", user.getName());
-//        String accessToken = jwtService.generateAccessToken(extraClaims, user);
-//        String refreshToken = jwtService.generateRefreshToken(extraClaims, user);
-
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshToken.getToken());
-
         return new JwtCookieResponse(jwtCookie.toString(), refreshTokenCookie.toString(),
-                new UserInfo(userDetails.getEmail(), userDetails.getName(), roles));
+                new UserInfo(userDetails.getId(), userDetails.getEmail(), userDetails.getName(), roles));
+//        return new JwtCookieResponse(jwtCookie.toString(), refreshTokenCookie.toString(), userDetails);
     }
 
-    public LogoutResponse logout() {
+    public LogoutResponse logout(HttpServletRequest request) {
         Object userPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!userPrincipal.toString().equals("anonymousUser")) {
             Long userId = ((UserDetailsImpl) userPrincipal).getId();
-            refreshTokenService.deleteByUserId(userId);
+
+            refreshTokenService.deleteByToken(jwtService.getRefreshTokenFromCookies(request));
         }
 
         ResponseCookie accessTokenCookie = jwtService.getCleanAccessTokenCookie();
@@ -107,37 +101,22 @@ public class AuthenticationService {
 
         return new LogoutResponse(accessTokenCookie.toString(), refreshTokenCookie.toString(),
                 new MessageResponse("You've been logged out"));
-    }
 
+//        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        refreshTokenService.deleteByUserId(userDetails.getId());
+//        ResponseCookie accessTokenCookie = jwtService.getCleanAccessTokenCookie();
+//        ResponseCookie refreshTokenCookie = jwtService.getCleanRefreshTokenCookie();
+//        return new LogoutResponse(accessTokenCookie.toString(), refreshTokenCookie.toString(),
+//                new MessageResponse("You've been logged out"));
 
-
-//    public RefreshResponse refresh(HttpServletRequest request) {
-//        // 1. get refresh_token from the request
-//        String authHeader = request.getHeader("Authorization");
-//        String refreshToken;
-//        String accessToken;
-//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//            refreshToken = authHeader.substring(7);
-//
-//            // 2. validate refresh_token
-//            try {
-//                String email = jwtService.extractUsername(refreshToken);
-//                User user = repository.findByEmail(email).orElseThrow();
-//                if (jwtService.isTokenValid(refreshToken)) {
-//
-//                    // 3. generate new access_token
-//                    accessToken = jwtService.generateAccessToken(user);
-//                    return RefreshResponse.builder()
-//                            .accessToken(accessToken)
-//                            .build();
-//                }
-//            } catch (Exception e) {
-//                throw new RuntimeException("Refresh token is not valid");
-//            }
-//        } else {
-//            throw new RuntimeException("Refresh token is missing");
+//        String accessToken = jwtService.getAccessTokenFromCookies(request);
+//        UserDetailsImpl userDetails = jwtService.extractUserDetailsFromToken(accessToken);
+//        if (userDetails != null) {
+//            refreshTokenService.deleteByUserId(userDetails.getId());
 //        }
-//
-//        return null;
-//    }
+//        ResponseCookie accessTokenCookie = jwtService.getCleanAccessTokenCookie();
+//        ResponseCookie refreshTokenCookie = jwtService.getCleanRefreshTokenCookie();
+//        return new LogoutResponse(accessTokenCookie.toString(), refreshTokenCookie.toString(),
+//                new MessageResponse("You've been logged out"));
+    }
 }

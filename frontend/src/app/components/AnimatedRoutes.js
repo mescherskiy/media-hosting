@@ -1,15 +1,14 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-
-import Login from "./Login";
-import Register from "./Register";
-import Home from "./Home";
-import Profile from "./Profile";
-import UserBoard from "./UserBoard";
-import AdminBoard from "./AdminBoard";
-import RequireAuth from "./RequireAuth";
-import Vault from "./Vault";
 import { AnimatePresence } from "framer-motion";
+
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Home from "../pages/Home";
+import Profile from "../pages/Profile";
+import Vault from "./Dropzone";
+import RequireAuth from "./RequireAuth";
+
 
 const AnimatedRoutes = () => {
   const location = useLocation()
@@ -23,9 +22,9 @@ const AnimatedRoutes = () => {
 
         <Route element={<RequireAuth />}>
           <Route path="profile" element={<Profile />} />
-          <Route path="user" element={<UserBoard />} />
-          <Route path="admin" element={<AdminBoard />} />
-          <Route path="vault" element={<Vault />} />
+          <Route path="vault/*" element={<Vault />} />
+            {/* <Route path="photo/:photoId" element={<Photo />} />
+          </Route> */}
         </Route>
       </Routes>
     </AnimatePresence>

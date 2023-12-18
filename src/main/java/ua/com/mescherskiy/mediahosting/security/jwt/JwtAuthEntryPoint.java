@@ -12,8 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import ua.com.mescherskiy.mediahosting.security.services.AuthenticationService;
+import ua.com.mescherskiy.mediahosting.security.services.RefreshTokenService;
+import ua.com.mescherskiy.mediahosting.security.services.UserDetailsImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +28,8 @@ import java.util.Map;
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
     private JwtService jwtService;
+
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
@@ -45,6 +51,10 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             final ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getOutputStream(), body);
         } else {
+            String refreshToken = jwtService.getRefreshTokenFromCookies(request);
+            if (refreshToken != null && !refreshToken.isEmpty()) {
+                refreshTokenService.deleteByToken(refreshToken);
+            }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 

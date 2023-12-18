@@ -11,4 +11,5 @@ public class PhotoResponse {
     private String url;
     private int width;
     private int height;
+    private Long id;
 }

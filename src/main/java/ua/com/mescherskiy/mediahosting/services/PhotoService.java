@@ -5,6 +5,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.aws.Bucket;
 import ua.com.mescherskiy.mediahosting.aws.FileStore;
@@ -21,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.apache.http.entity.ContentType.*;
 
@@ -53,10 +55,13 @@ public class PhotoService {
 //    }
 
     public List<PhotoResponse> generateAllUserPhotoUrls(String username) {
-        List<Photo> photos = photoRepository.findAllByUser_Email(username);
+        List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(username);
         return photos.stream().map(photo -> new PhotoResponse(
                 "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + username + "/" + photo.getId(),
-                photo.getWidth(), photo.getHeight())).toList();
+                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+//        return photos.stream().map(photo -> new PhotoResponse(
+//                "http://localhost:8080/api/vault/" + username + "/" + photo.getId(),
+//                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
     }
 
 //    public Optional<Photo> getPhotoByFilenameOrPath(String fileName, String path) {
@@ -164,7 +169,7 @@ public class PhotoService {
         String key = "";
         if (user != null && user.getPhotos().stream().anyMatch(photo -> photo.getId().equals(photoId))) {
             key = photoRepository.findById(photoId).get().getFileName();
-            logger.info("Photo path+key: " + path+key);
+            logger.info("Photo path+key: " + path+"/"+key);
             return fileStore.download(path, key);
         }
         return new byte[0];
@@ -179,6 +184,28 @@ public class PhotoService {
             return fileStore.download(path, "thumbnail_" + key);
         }
         return new byte[0];
+    }
+
+    public void deletePhotos(String username, List<Long> photoIds) {
+        User user = isUserExists(username);
+        String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
+        boolean allPhotosExist = new HashSet<>(user.getPhotos().stream()
+                .map(Photo::getId).toList())
+                .containsAll(photoIds);
+
+        if (!CollectionUtils.isEmpty(photoIds) && allPhotosExist) {
+            List<String> photoKeys = photoIds.stream().map(id -> photoRepository.findById(id).get().getFileName()).toList();
+            fileStore.delete(path, photoKeys);
+
+            List<Photo> photosToDelete = user.getPhotos().stream()
+                    .filter(photo -> photoIds.contains(photo.getId())).toList();
+
+            user.getPhotos().removeAll(photosToDelete);
+
+            for (Long id: photoIds) {
+                photoRepository.deleteById(id);
+            }
+        }
     }
 
 

@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { logOut } from "../slices/authSlice";
+import { setUploadProgress } from "../slices/uploadSlice";
+
+import axios from "axios";
 
 const baseQuery = fetchBaseQuery({
     // baseUrl: "http://localhost:8080/api",
@@ -61,6 +64,12 @@ const api = createApi({
                 dispatch(logOut())
             }
         }),
+        deleteUser: builder.mutation({
+            query: id => ({
+                url: `user/${id}/delete`,
+                method: "POST",
+            })
+        }),
         getPublicContent: builder.query({
             query: () => ({
                 url: "test/all",
@@ -74,14 +83,72 @@ const api = createApi({
             query: () => ("test/admin")
         }),
         uploadPhoto: builder.mutation({
-            query: ({ email, file }) => ({
-                url: `vault/${email}/upload`,
-                method: "POST",
-                body: file
-            }),
+            // query: ({ email, file }) => ({
+            //     url: `vault/${email}/upload`,
+            //     method: "POST",
+            //     body: file,    
+            // }),
+            // queryFn: async ({ options, input, context }) => {
+            //     const { email, file } = input;
+            //     const { url, method, body } = options;
+            
+            //     const formData = new FormData();
+            //     formData.append("file", file);
+            
+            //     const axiosConfig = {
+            //       method,
+            //       url,
+            //       data: formData,
+            //       onUploadProgress: (progressEvent) => {
+            //         if (progressEvent.lengthComputable) {
+            //           const percentCompleted = Math.round(
+            //             (progressEvent.loaded / progressEvent.total) * 100
+            //           );
+            //           context.updateProgress(percentCompleted);
+            //         }
+            //       },
+            //     };
+            
+            //     const response = await axios(axiosConfig);
+            //     return response.data;
+            //   },
+            queryFn: async ({email, file}, api) => {
+                try {
+                    const result = await axios.post(`/api/vault/${email}/upload`, file, {
+                        onUploadProgress: progressEvent => {
+                            let percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+                            console.log("percent completed:")
+                            console.log(percentCompleted)
+                            api.dispatch(setUploadProgress(percentCompleted))
+                        }
+                    })
+                    return { data: result.data }
+                } catch (error) {
+                    let err = error
+                    return {
+                        error: {
+                            status: err.response?.status,
+                            data: err.response?.data || err.message,
+                        }
+                    }
+                } finally {
+                    api.dispatch(setUploadProgress(0))
+                }
+            },
+            
         }),
         getUserPhotos: builder.query({
             query: username => `vault/${username}`
+        }),
+        deleteUserPhotos: builder.mutation({
+            query: ({ username, photoIds }) => ({
+                url: `vault/${username}/delete`,
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                  },
+                body: JSON.stringify(photoIds)
+            }),
         }),
     })
 })
@@ -94,7 +161,9 @@ export const {
     useGetPublicContentQuery,
     useGetAdminBoardQuery,
     useGetUserPhotosQuery,
-    useUploadPhotoMutation
+    useUploadPhotoMutation,
+    useDeleteUserPhotosMutation,
+    useDeleteUserMutation
 } = api;
 
 export default api;
