@@ -30,8 +30,6 @@ aws:
   s3:
     accessKey: ${AWS_S3_ACCESSKEY}
     secretKey: ${AWS_S3_SECRETKEY}
-#    accessKey: "AKIA6FYW4SQKFPNHCMXY"
-#    secretKey: "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"
 
 jwt:
   secretKey: ${JWT_SECRETKEY}
