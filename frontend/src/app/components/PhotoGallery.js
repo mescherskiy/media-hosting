@@ -13,6 +13,11 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
     const username = user.email
 
     const photosList = useLoaderData();
+
+    if (!photosList || photosList.length < 1) {
+        return null
+    }
+
     const photos = photosList.map((photo) => ({
         src: `${photo.url}?size=full`,
         width: photo.width || 0,
