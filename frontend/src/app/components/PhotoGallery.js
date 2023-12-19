@@ -148,43 +148,38 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
             {/* {isSidebarOpen &&
                 <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ username, selectedPhotos })} />}
             <Album photos={photos} handlePhotoClick={handlePhotoClick} handleToggleSelection={handleToggleSelection} /> */}
-            {photos && (
-                <>
-                    <PhotoAlbum
-                        layout="rows"
-                        photos={galleryImages}
-                        onClick={handlePhotoClick}
-                        spacing={8}
-                        renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-                            <div className="photo-item" style={{ position: "relative", ...wrapperStyle }}>
-                                {renderDefaultPhoto({ wrapped: true })}
-                                <div className={`photo-overlay ${photo.isSelected ? "selected" : ""}`}>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="white"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1"
-                                        stroke="none"
-                                        className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
-                                        onClick={() => handleToggleSelection(photo.id)}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        )}
-                    />
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <GooglePhoto
-                            open={open}
-                            src={photos}
-                            srcIndex={index}
-                            onChangeIndex={handleChangeIndex}
-                            onClose={handleClose}
-                        />
-                    </Suspense>
-                </>
-            )}
-
+            <PhotoAlbum
+                layout="rows"
+                photos={galleryImages}
+                onClick={handlePhotoClick}
+                spacing={8}
+                renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
+                    <div className="photo-item" style={{ position: "relative", ...wrapperStyle }}>
+                        {renderDefaultPhoto({ wrapped: true })}
+                        <div className={`photo-overlay ${photo.isSelected ? "selected" : ""}`}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="white"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1"
+                                stroke="none"
+                                className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
+                                onClick={() => handleToggleSelection(photo.id)}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                )}
+            />
+            <Suspense fallback={<div>Loading...</div>}>
+                <GooglePhoto
+                    open={open}
+                    src={photos}
+                    srcIndex={index}
+                    onChangeIndex={handleChangeIndex}
+                    onClose={handleClose}
+                />
+            </Suspense>
         </div>
     );
 }
