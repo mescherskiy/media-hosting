@@ -112,9 +112,9 @@ const api = createApi({
             //     const response = await axios(axiosConfig);
             //     return response.data;
             //   },
-            queryFn: async ({email, file}, api) => {
+            queryFn: async ({username, file}, api) => {
                 try {
-                    const result = await axios.post(`/api/vault/${email}/upload`, file, {
+                    const result = await axios.post(`/api/vault/${username}/upload`, file, {
                         onUploadProgress: progressEvent => {
                             let percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
                             console.log("percent completed:")
