@@ -14,83 +14,126 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
 
     const photosList = useLoaderData();
 
+    let content = null
+
     if (!photosList || photosList.length < 1) {
-        return null
-    }
+        content = <div>Loading...</div>
+    } else {
 
-    const photos = photosList.map((photo) => ({
-        src: `${photo.url}?size=full`,
-        width: photo.width || 0,
-        height: photo.height || 0,
-        id: photo.id,
-        isSelected: selectedPhotos.includes(photo.id)
-    }));
+        const photos = photosList.map((photo) => ({
+            src: `${photo.url}?size=full`,
+            width: photo.width || 0,
+            height: photo.height || 0,
+            id: photo.id,
+            isSelected: selectedPhotos.includes(photo.id)
+        }));
 
-    const galleryImages = cloneDeep(photos);
-    console.log("galleryImages: ", galleryImages)
+        const galleryImages = cloneDeep(photos);
+        console.log("galleryImages: ", galleryImages)
 
-    const [open, setOpen] = useState(false)
-    const [index, setIndex] = useState(0)
+        const [open, setOpen] = useState(false)
+        const [index, setIndex] = useState(0)
 
-    // const { data: userPhotos, isFetching, isLoading, refetch } = useGetUserPhotosQuery(username);
-    // const [deletePhotos] = useDeleteUserPhotosMutation();
+        // const { data: userPhotos, isFetching, isLoading, refetch } = useGetUserPhotosQuery(username);
+        // const [deletePhotos] = useDeleteUserPhotosMutation();
 
-    // const photos = useLoaderData()
+        // const photos = useLoaderData()
 
-    // const [selectedPhotos, setSelectedPhotos] = useState([]);
-    // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+        // const [selectedPhotos, setSelectedPhotos] = useState([]);
+        // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const navigate = useNavigate()
+        const navigate = useNavigate()
 
-    // useEffect(() => {
-    //     if (selectedPhotos.length > 0) {
-    //         setIsSidebarOpen(true)
-    //     } else {
-    //         setIsSidebarOpen(false)
-    //     }
-    //     // setIsSidebarOpen(selectedPhotos.length > 0);
-    // }, [selectedPhotos])
+        // useEffect(() => {
+        //     if (selectedPhotos.length > 0) {
+        //         setIsSidebarOpen(true)
+        //     } else {
+        //         setIsSidebarOpen(false)
+        //     }
+        //     // setIsSidebarOpen(selectedPhotos.length > 0);
+        // }, [selectedPhotos])
 
-    // const handleDeletePhotos = useCallback(async ({ username, selectedPhotos }) => {
-    //     console.log("Deleting photos for user:", username);
-    //     console.log("Selected photo IDs:", selectedPhotos);
-    //     await deletePhotos({ username, photoIds: selectedPhotos })
-    //     setSelectedPhotos([])
-    //     //refetch()
-    // }, [username, selectedPhotos, deletePhotos])
+        // const handleDeletePhotos = useCallback(async ({ username, selectedPhotos }) => {
+        //     console.log("Deleting photos for user:", username);
+        //     console.log("Selected photo IDs:", selectedPhotos);
+        //     await deletePhotos({ username, photoIds: selectedPhotos })
+        //     setSelectedPhotos([])
+        //     //refetch()
+        // }, [username, selectedPhotos, deletePhotos])
 
-    const handlePhotoClick = (data) => {
-        setOpen(true)
-        if (data) {
-            console.log(data)
-            setIndex(data.index)
-            navigate(`photo/${data.photo.id}`)
+        const handlePhotoClick = (data) => {
+            setOpen(true)
+            if (data) {
+                console.log(data)
+                setIndex(data.index)
+                navigate(`photo/${data.photo.id}`)
+            }
         }
-    }
 
-    const handleChangeIndex = useCallback(
-        (newIndex) => {
-            setIndex(newIndex)
-            navigate(`photo/${photos[newIndex].id}`);
-        }, [navigate]);
+        const handleChangeIndex = useCallback(
+            (newIndex) => {
+                setIndex(newIndex)
+                navigate(`photo/${photos[newIndex].id}`);
+            }, [navigate]);
 
-    useEffect(() => {
-        console.log("Updated index: " + index);
-    }, [index]);
+        useEffect(() => {
+            console.log("Updated index: " + index);
+        }, [index]);
 
-    const handleClose = () => {
-        setOpen(false)
-        navigate("")
-    }
-
-    const handleToggleSelection = useCallback((id) => {
-        if (selectedPhotos.includes(id)) {
-            setSelectedPhotos((prevSelectedPhotos) =>
-                prevSelectedPhotos.filter((photoId) => photoId !== id));
-        } else {
-            setSelectedPhotos((prevSelectedPhotos) => [...prevSelectedPhotos, id]);
+        const handleClose = () => {
+            setOpen(false)
+            navigate("")
         }
-    }, [selectedPhotos, setSelectedPhotos])
+
+        const handleToggleSelection = useCallback((id) => {
+            if (selectedPhotos.includes(id)) {
+                setSelectedPhotos((prevSelectedPhotos) =>
+                    prevSelectedPhotos.filter((photoId) => photoId !== id));
+            } else {
+                setSelectedPhotos((prevSelectedPhotos) => [...prevSelectedPhotos, id]);
+            }
+        }, [selectedPhotos, setSelectedPhotos])
+
+        content = (
+            <div className="photogallery">
+            {/* {isSidebarOpen &&
+                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ username, selectedPhotos })} />}
+            <Album photos={photos} handlePhotoClick={handlePhotoClick} handleToggleSelection={handleToggleSelection} /> */}
+            <PhotoAlbum
+                layout="rows"
+                photos={galleryImages}
+                onClick={handlePhotoClick}
+                spacing={8}
+                renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
+                    <div className="photo-item" style={{ position: "relative", ...wrapperStyle }}>
+                        {renderDefaultPhoto({ wrapped: true })}
+                        <div className={`photo-overlay ${photo.isSelected ? "selected" : ""}`}>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="white"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1"
+                                stroke="none"
+                                className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
+                                onClick={() => handleToggleSelection(photo.id)}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                )}
+            />
+            <Suspense fallback={<div>Loading...</div>}>
+                <GooglePhoto
+                    open={open}
+                    src={photos}
+                    srcIndex={index}
+                    onChangeIndex={handleChangeIndex}
+                    onClose={handleClose}
+                />
+            </Suspense>
+        </div>
+        )
+    }
 
     //if (isFetching || isLoading) { return <div>Loading...</div> }
 
@@ -144,43 +187,7 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
     // );
 
     return (
-        <div className="photogallery">
-            {/* {isSidebarOpen &&
-                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ username, selectedPhotos })} />}
-            <Album photos={photos} handlePhotoClick={handlePhotoClick} handleToggleSelection={handleToggleSelection} /> */}
-            <PhotoAlbum
-                layout="rows"
-                photos={galleryImages}
-                onClick={handlePhotoClick}
-                spacing={8}
-                renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-                    <div className="photo-item" style={{ position: "relative", ...wrapperStyle }}>
-                        {renderDefaultPhoto({ wrapped: true })}
-                        <div className={`photo-overlay ${photo.isSelected ? "selected" : ""}`}>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="white"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1"
-                                stroke="none"
-                                className={`w-6 h-6 select-icon ${photo.isSelected ? "selected" : ""}`}
-                                onClick={() => handleToggleSelection(photo.id)}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                )}
-            />
-            <Suspense fallback={<div>Loading...</div>}>
-                <GooglePhoto
-                    open={open}
-                    src={photos}
-                    srcIndex={index}
-                    onChangeIndex={handleChangeIndex}
-                    onClose={handleClose}
-                />
-            </Suspense>
-        </div>
+        {content}
     );
 }
 
