@@ -26,6 +26,7 @@ import ua.com.mescherskiy.mediahosting.repo.UserRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -78,7 +79,8 @@ public class AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtService.generateAccessTokenCookie(userDetails);
-        //find all user's refresh tokens and if they exist - delete them
+        Optional<RefreshToken> oldToken = refreshTokenService.findByUserId(userDetails.getId());
+        oldToken.ifPresent(token -> refreshTokenService.deleteByToken(token.getToken()));
         ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshTokenService.createRefreshToken(userDetails.getId()).getToken());
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();

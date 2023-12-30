@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../slices/authSlice';
-import { Navigate, Outlet } from 'react-router-dom';
+import { selectAuth, selectCurrentUser } from '../slices/authSlice';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { useGetUserQuery } from '../api/api';
 
 const AuthLayout = () => {
-    const [user] = useState(useSelector(selectCurrentUser))
+    // const user = useGetUserQuery().data
+    const isAuthenticated = useSelector(selectAuth)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        console.log(user)
-        if (!user) {
-            <Navigate to="/" replace={true} />
+        console.log(isAuthenticated)
+        if (!isAuthenticated) {
+            navigate("/", {replace: true}) 
         }
-    }, [user])
+    }, [isAuthenticated, navigate])
 
 
     return (

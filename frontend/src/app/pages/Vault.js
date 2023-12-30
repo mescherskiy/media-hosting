@@ -1,55 +1,15 @@
-// import React, { useEffect, useCallback, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../slices/authSlice";
-// import { useUploadPhotoMutation, useGetUserPhotosQuery } from "../api/api";
-// import { selectUploadProgress } from "../slices/uploadSlice";
 import Dropzone from "../components/Dropzone";
-import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
-
-import { useDeleteUserPhotosMutation } from "../api/api";
+import { useDeleteUserPhotosMutation, useGetUserPhotosQuery } from "../api/api";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-// import Photo from "../components/Photo";
-// import GooglePhoto from "react-google-photo";
 import PhotoGallery from "../components/PhotoGallery";
 
 const Vault = () => {
-    const user = useSelector(selectCurrentUser)
-    const username = user.email
-
-    // const navigate = useNavigate()
+    const { data: photoList, isError, error, isLoading, isSuccess } = useGetUserPhotosQuery();
     const [deletePhotos] = useDeleteUserPhotosMutation();
 
     const [selectedPhotos, setSelectedPhotos] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    // const [open, setOpen] = useState(false)
-    // const [index, setIndex] = useState(0)
-    
-    // const photosList = useLoaderData();
-    // const photos = photosList.map((photo) => ({
-    //     src: `${photo.url}?size=full`,
-    //     width: photo.width || 0,
-    //     height: photo.height || 0,
-    //     id: photo.id,
-    //     isSelected: selectedPhotos.includes(photo.id)
-    // }));
-
-    // let photos = []
-
-    // useEffect(() => {
-    //     try {
-    //         console.log("photoList & photos: ", photosList, photos)
-    //         photos = photosList.map((photo) => ({
-    //             src: `${photo.url}?size=full`,
-    //             width: photo.width,
-    //             height: photo.height,
-    //             id: photo.id,
-    //             isSelected: selectedPhotos.includes(photo.id)
-    //         }))
-    //     } catch (e) {
-    //         console.log(e, photosList)
-    //     }
-    // }, [photosList])
 
     useEffect(() => {
         if (selectedPhotos.length > 0) {
@@ -59,47 +19,34 @@ const Vault = () => {
         }
     }, [selectedPhotos])
 
-    // const handleToggleSelection = (id) => {
-    //     if (selectedPhotos.includes(id)) {
-    //         setSelectedPhotos((prevSelectedPhotos) =>
-    //             prevSelectedPhotos.filter((photoId) => photoId !== id));
-    //     } else {
-    //         setSelectedPhotos((prevSelectedPhotos) => [...prevSelectedPhotos, id]);
-    //     }
-    // }
-
-    const handleDeletePhotos = async ({ username, selectedPhotos }) => {
-        await deletePhotos({ username, photoIds: selectedPhotos })
+    const handleDeletePhotos = async ({ selectedPhotos }) => {
+        await deletePhotos({ photoIds: selectedPhotos })
         setSelectedPhotos([])
     }
 
-    // const handlePhotoClick = (data) => {
-    //     setOpen(true)
-    //     if (data) {
-    //         console.log(data)
-    //         setIndex(data.index)
-    //         navigate(`photo/${data.photo.id}`)
-    //     }
-    // }
+    let content = null
 
-    // const handleChangeIndex = (newIndex) => {
-    //     setIndex(newIndex)
-    // }
-
-    // useEffect(() => {
-    //     console.log("Updated index: " + index);
-    // }, [index]);
-
-    // const handleClose = () => {
-    //     setOpen(false)
-    //     navigate("")
-    // }
+    if (isLoading) {
+        content = <div>Loading...</div>
+    } else if (isError) {
+        content = <div>{error.message}</div>
+    } else if (isSuccess && photoList) {
+        console.log("photos in Vault: ", photoList)
+        const photos = photoList.map((photo) => ({
+            src: `${photo.url}?size=full`,
+            width: photo.width || 0,
+            height: photo.height || 0,
+            id: photo.id,
+            isSelected: selectedPhotos.includes(photo.id)
+        }));
+        content = <PhotoGallery selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} photos={photos}/>
+    }
 
     return (
         <div className="container">
-            <Dropzone username={username} />
+            <Dropzone />
             {isSidebarOpen &&
-                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ username, selectedPhotos })} />}
+                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ selectedPhotos })} />}
             {/* <Outlet context={[photos, open, setOpen, index, setIndex, selectedPhotos, setSelectedPhotos, handleChangeIndex, handleClose]}
             // photos={photosList}
             // open={open}
@@ -115,7 +62,8 @@ const Vault = () => {
                 //   onChangeIndex={handleChangeIndex}
                 onClose={handleClose}
             /> */}
-            <PhotoGallery selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />
+            {/* <PhotoGallery selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} photosList={photos}/> */}
+            {content}
         </div>
     )
 }

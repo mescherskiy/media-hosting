@@ -25,13 +25,13 @@ public class UserController {
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.badRequest().body("User not found");
     }
 
-    @PostMapping("/{userId}/delete")
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
-        if (userId == null) {
-            return ResponseEntity.badRequest().body("User ID is required");
-        }
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+//        if (userId == null) {
+//            return ResponseEntity.badRequest().body("User ID is required");
+//        }
 
-        return userService.delete(userId, request)
+        return userService.delete(request)
                 ? ResponseEntity.ok("User deleted successfully")
                 : ResponseEntity.status(HttpStatus.FORBIDDEN).body("Failed to delete user");
     }

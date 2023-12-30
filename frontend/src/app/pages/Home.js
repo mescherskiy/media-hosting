@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../slices/authSlice";
+import { selectAuth, selectCurrentUser } from "../slices/authSlice";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useGetUserQuery } from "../api/api";
 // import { useLogoutMutation } from "../api/api";
 
 
 const Home = () => {
-  const user = useSelector(selectCurrentUser)
+  const authenticated = useSelector(selectAuth)
   // const [logout] = useLogoutMutation()
 
   // useEffect(() => {
@@ -21,7 +22,7 @@ const Home = () => {
       <section className="main d-flex flex-column justify-content-center align-items-center text-white">
         <h1 className="p-3">Experience your memories like never before</h1>
         <h2 className="magic-text p-3">Create. Collect. Share.</h2>
-        {user
+        {authenticated
           ? (
               <Link to="/vault" className="btn-homepage btn btn-lg btn-outline-light m-3">
               MY VAULT

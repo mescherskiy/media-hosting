@@ -1,5 +1,6 @@
 package ua.com.mescherskiy.mediahosting.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,9 @@ public class PhotoController {
 //        return photoService.getAllUserPhotoKeysByUsername(userEmail);
 //    }
 
-    @GetMapping("/{username}")
-    public List<PhotoResponse> getAllUserPhotoIds(@PathVariable("username") String userEmail) {
-        return photoService.generateAllUserPhotoUrls(userEmail);
+    @GetMapping()
+    public List<PhotoResponse> getAllUserPhotoIds(HttpServletRequest request) {
+        return photoService.generateAllUserPhotoUrls(request);
     }
 
 //    @GetMapping("/{username}/{imageKey}")
@@ -39,35 +40,34 @@ public class PhotoController {
 //    }
 
     @PostMapping(
-            path = "/{username}/upload",
+            path = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public void uploadUserPhoto(@PathVariable("username") String userEmail, @RequestParam("file")MultipartFile file) {
+    public void uploadUserPhoto(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
         try {
-            photoService.uploadOriginalPhoto(userEmail, file);
+            photoService.uploadOriginalPhoto(file, request);
         } catch (IOException e) {
             throw new RuntimeException("Cannot upload photo", e);
         }
     }
 
-    @GetMapping("/{username}/{photoId}")
-    public byte[] downloadUserPhotoById(@PathVariable("username") String username,
-                                        @PathVariable("photoId") Long photoId,
-                                        @RequestParam("size") String size) {
+    @GetMapping("/{photoId}")
+    public byte[] downloadUserPhotoById(@PathVariable("photoId") Long photoId,
+                                        @RequestParam("size") String size,
+                                        HttpServletRequest request) {
         if (size.equals("thumbnail")) {
-            return photoService.downloadThumbnail(username, photoId);
+            return photoService.downloadThumbnail(photoId, request);
         } else if (size.equals("full")) {
-            return photoService.downloadOriginalPhoto(username, photoId);
+            return photoService.downloadOriginalPhoto(photoId, request);
         } else {
             throw new IllegalArgumentException("Invalid photo size");
         }
     }
 
-    @PostMapping("/{username}/delete")
-    public void deletePhotos(@PathVariable("username") String username, @RequestBody List<Long> photoIds) {
-        logger.info("Received request to delete photos for user: " + username);
+    @PostMapping("/delete")
+    public void deletePhotos(@RequestBody List<Long> photoIds, HttpServletRequest request) {
         logger.info("Photo IDs to delete: " + photoIds);
-        photoService.deletePhotos(username, photoIds);
+        photoService.deletePhotos(photoIds, request);
     }
 }

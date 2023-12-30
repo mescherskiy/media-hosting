@@ -17,6 +17,7 @@ import Vault from "./app/pages/Vault";
 import Album from "./app/components/Album";
 import Photo from "./app/components/Photo";
 import { photoGalleryLoader } from "./app/components/PhotoGallery";
+import api from "./app/api/api";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,7 +30,7 @@ const router = createBrowserRouter(
       <Route element={<AuthLayout />}>
         <Route path="profile" element={<Profile />} />
 
-        <Route path="vault" element={<Vault />} loader={photoGalleryLoader} >
+        <Route path="vault" element={<Vault />} >
           {/* <Route index element={<Album />} /> */}
           <Route path="photo/:photoId" />
         </Route>

@@ -38,6 +38,8 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    public Optional<RefreshToken> findByUserId(Long userId) {return refreshTokenRepository.findByUser_Id(userId); }
+
     public RefreshToken createRefreshToken(Long userId) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(userRepository.findById(userId).get())

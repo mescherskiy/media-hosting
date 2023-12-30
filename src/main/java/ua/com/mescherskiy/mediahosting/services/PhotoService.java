@@ -1,5 +1,6 @@
 package ua.com.mescherskiy.mediahosting.services;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
 import ua.com.mescherskiy.mediahosting.repo.PhotoRepository;
 import ua.com.mescherskiy.mediahosting.repo.ThumbnailRepository;
 import ua.com.mescherskiy.mediahosting.repo.UserRepository;
+import ua.com.mescherskiy.mediahosting.security.jwt.JwtService;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,6 +33,8 @@ import static org.apache.http.entity.ContentType.*;
 public class PhotoService {
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
+
+    private final JwtService jwtService;
     private final FileStore fileStore;
     private final static Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
@@ -54,13 +58,14 @@ public class PhotoService {
 //        return photos.stream().map(Photo::getId).collect(Collectors.toList());
 //    }
 
-    public List<PhotoResponse> generateAllUserPhotoUrls(String username) {
+    public List<PhotoResponse> generateAllUserPhotoUrls(HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(username);
         return photos.stream().map(photo -> new PhotoResponse(
-                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + username + "/" + photo.getId(),
+                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + photo.getId(),
                 photo.getWidth(), photo.getHeight(), photo.getId())).toList();
 //        return photos.stream().map(photo -> new PhotoResponse(
-//                "http://localhost:8080/api/vault/" + username + "/" + photo.getId(),
+//                "http://localhost:8080/api/vault/" + photo.getId(),
 //                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
     }
 
@@ -72,9 +77,10 @@ public class PhotoService {
 //        return photoRepository.findById(id);
 //    }
 
-    public void uploadOriginalPhoto(String username, MultipartFile file) throws IOException {
+    public void uploadOriginalPhoto(MultipartFile file, HttpServletRequest request) throws IOException {
         isFileEmpty(file);
         isImage(file);
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
         Map<String, String> metadata = extractMetadata(file);
 
@@ -163,7 +169,8 @@ public class PhotoService {
 //                .build();
 //    }
 
-    public byte[] downloadOriginalPhoto(String username, Long photoId) {
+    public byte[] downloadOriginalPhoto(Long photoId, HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
         String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
         String key = "";
@@ -175,7 +182,8 @@ public class PhotoService {
         return new byte[0];
     }
 
-    public byte[] downloadThumbnail(String username, Long photoId) {
+    public byte[] downloadThumbnail(Long photoId, HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
         String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
         String key = "";
@@ -186,7 +194,8 @@ public class PhotoService {
         return new byte[0];
     }
 
-    public void deletePhotos(String username, List<Long> photoIds) {
+    public void deletePhotos(List<Long> photoIds, HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
         String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
         boolean allPhotosExist = new HashSet<>(user.getPhotos().stream()

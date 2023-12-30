@@ -31,6 +31,10 @@ aws:
     accessKey: ${AWS_S3_ACCESSKEY}
     secretKey: ${AWS_S3_SECRETKEY}
 
+    # DELETE BEFORE PUSH TO REPO
+#    accessKey:
+#    secretKey:
+
 jwt:
   secretKey: ${JWT_SECRETKEY}
 #  secretKey: 51655468576D5A7134743677397A24432646294A404E635266556A586E327235

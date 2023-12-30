@@ -1,54 +1,16 @@
 import React, { useCallback, useEffect, useState, lazy, Suspense } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom"
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../slices/authSlice";
-import { store } from "../store";
+import { useNavigate } from "react-router-dom"
 import { PhotoAlbum } from "react-photo-album";
 import "react-google-photo/styles.css"
 import { cloneDeep } from "lodash";
 const GooglePhoto = lazy(() => import("react-google-photo"));
 
-const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
-    const user = useSelector(selectCurrentUser)
-    const username = user.email
-
-    const photosList = useLoaderData();
-
-
-    
-
-    const galleryImages = cloneDeep(photos);
-    console.log("galleryImages: ", galleryImages)
+const PhotoGallery = ({ selectedPhotos, setSelectedPhotos, photos }) => {
 
     const [open, setOpen] = useState(false)
     const [index, setIndex] = useState(0)
 
-    // const { data: userPhotos, isFetching, isLoading, refetch } = useGetUserPhotosQuery(username);
-    // const [deletePhotos] = useDeleteUserPhotosMutation();
-
-    // const photos = useLoaderData()
-
-    // const [selectedPhotos, setSelectedPhotos] = useState([]);
-    // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
     const navigate = useNavigate()
-
-    // useEffect(() => {
-    //     if (selectedPhotos.length > 0) {
-    //         setIsSidebarOpen(true)
-    //     } else {
-    //         setIsSidebarOpen(false)
-    //     }
-    //     // setIsSidebarOpen(selectedPhotos.length > 0);
-    // }, [selectedPhotos])
-
-    // const handleDeletePhotos = useCallback(async ({ username, selectedPhotos }) => {
-    //     console.log("Deleting photos for user:", username);
-    //     console.log("Selected photo IDs:", selectedPhotos);
-    //     await deletePhotos({ username, photoIds: selectedPhotos })
-    //     setSelectedPhotos([])
-    //     //refetch()
-    // }, [username, selectedPhotos, deletePhotos])
 
     const handlePhotoClick = (data) => {
         setOpen(true)
@@ -83,17 +45,10 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
         }
     }, [selectedPhotos, setSelectedPhotos])
 
-    if (!photosList || photosList.length < 1) {
-        return null
-    }
+    console.log("photoList in PG: ", photos)
 
-    const photos = photosList.map((photo) => ({
-        src: `${photo.url}?size=full`,
-        width: photo.width || 0,
-        height: photo.height || 0,
-        id: photo.id,
-        isSelected: selectedPhotos.includes(photo.id)
-    }));
+    const galleryImages = cloneDeep(photos);
+    console.log("galleryImages: ", galleryImages)
 
     //if (isFetching || isLoading) { return <div>Loading...</div> }
 
@@ -148,9 +103,6 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
 
     return (
         <div className="photogallery">
-            {/* {isSidebarOpen &&
-                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ username, selectedPhotos })} />}
-            <Album photos={photos} handlePhotoClick={handlePhotoClick} handleToggleSelection={handleToggleSelection} /> */}
             <PhotoAlbum
                 layout="rows"
                 photos={galleryImages}
@@ -189,13 +141,44 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos }) => {
 
 export default PhotoGallery
 
-export const photoGalleryLoader = async () => {
+// export const photoGalleryLoader = (dispatch) =>
+//     async ({ request }) => {
+//         const promise = dispatch(api.endpoints.getUserPhotos.initiate())
+//         request.signal.onabort = promise.abort;
+//         const res = await promise
 
-    const username = store.getState().auth?.user?.email
+//         if (res.error) {
+//             throw new Error('Error fetching photos');
+//         }
 
-    const res = await fetch(`/api/vault/${username}`)
-    if (!res.ok) {
-        return Error("Could not fetch the photos")
-    }
-    return res.json()
-}
+//         const { data: photos } = res
+//         console.log("photos in loader: ", photos)
+//         return photos
+//     }
+
+// export const photoGalleryLoader = async (dispatch) => {
+//     const promise = dispatch(api.endpoints.getUserPhotos.initiate());
+//     const res = await promise;
+
+//     if (res.error) {
+//         throw new Error('Error fetching photos');
+//     }
+
+//     const { data: photos } = res;
+//     console.log('photos in loader: ', photos);
+//     return photos;
+// };
+
+// export const photoGalleryLoader = async () => {
+//     const promise = api.endpoints.getUserPhotos.initiate()
+//     const res = await promise;
+
+//     if (res.error) {
+//         throw new Error('Error fetching photos');
+//     }
+
+//     const { data: photos } = res;
+
+//     console.log('photos in loader: ', photos);
+//     return photos;
+// };

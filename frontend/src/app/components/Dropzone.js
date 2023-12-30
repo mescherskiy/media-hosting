@@ -4,14 +4,14 @@ import { selectUploadProgress } from "../slices/uploadSlice";
 import { useCallback, useState } from "react";
 import { useGetUserPhotosQuery, useUploadPhotoMutation } from "../api/api";
 
-const Dropzone = ({ username }) => {
+const Dropzone = () => {
 
     const uploadProgress = useSelector(selectUploadProgress)
 
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
 
-    const { refetch } = useGetUserPhotosQuery(username)
+    const { refetch } = useGetUserPhotosQuery()
 
     const [uploadPhoto] = useUploadPhotoMutation()
 
@@ -24,7 +24,7 @@ const Dropzone = ({ username }) => {
                 const formData = new FormData()
                 formData.append("file", file)
 
-                const response = await uploadPhoto({ username, file: formData })
+                const response = await uploadPhoto({ file: formData })
 
                 if (response.error) {
                     throw new Error(response.error.message || "Upload failed")
@@ -40,7 +40,7 @@ const Dropzone = ({ username }) => {
         } finally {
             setIsUploading(false)
         }
-    }, [uploadPhoto, username, refetch])
+    }, [uploadPhoto, refetch])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop, multiple: true, accept: { "image/*": ['.jpeg', '.png', '.gif'] }, disabled: isUploading

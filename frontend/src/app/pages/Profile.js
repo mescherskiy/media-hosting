@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-import { selectCurrentUser } from "../slices/authSlice";
-import { useDeleteUserMutation } from "../api/api";
+import { useDeleteUserMutation, useGetUserQuery } from "../api/api";
 
 const Profile = () => {
-  const user = useSelector(selectCurrentUser)
+  const { data:user, isSuccess, isError, error, isFetching, isLoading } = useGetUserQuery()
+  
+
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteUser, response] = useDeleteUserMutation();
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ const Profile = () => {
   const handleCloseModal = () => setShowDeleteModal(false)
 
   const handleDeleteProfile = async () => {
-    await deleteUser(user.id)
+    await deleteUser()
     console.log(response)
     if (response.data?.status === 200) {
       navigate("/")
@@ -28,8 +29,20 @@ const Profile = () => {
 
   //const user = JSON.parse(localStorage.getItem("user"));
 
-  if (!user) {
-    return <Navigate to="/login" />;
+  // if (!user) {
+  //   return <Navigate to="/login" />;
+  // }
+
+  if (isFetching || isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (isError) {
+    return <div>{error}</div>
+  }
+
+  if (isSuccess) {
+    console.log(user)
   }
 
   return (

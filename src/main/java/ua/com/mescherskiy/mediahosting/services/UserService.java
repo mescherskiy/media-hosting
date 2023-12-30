@@ -15,15 +15,14 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    public boolean delete (Long userId, HttpServletRequest request) {
-        String usernameFromJWT = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
-        if (usernameFromJWT == null) {
+    public boolean delete (HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
+        if (username == null) {
             return false;
         }
-        return userRepository.findById(userId)
-                .filter(user -> user.getEmail().equals(usernameFromJWT))
+        return userRepository.findByEmail(username)
                 .map(user -> {
-                    userRepository.deleteById(userId);
+                    userRepository.deleteByEmail(username);
                     return true;
                 }).orElse(false);
     }

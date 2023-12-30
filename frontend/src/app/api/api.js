@@ -40,6 +40,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 const api = createApi({
     baseQuery: baseQueryWithReauth,
+    tagTypes: ["User", "Photo"],
     endpoints: builder => ({
         registration: builder.mutation({
             query: credentials => ({
@@ -64,23 +65,20 @@ const api = createApi({
                 dispatch(logOut())
             }
         }),
+        getUser: builder.query({
+            query: () => ("user"),
+            providesTags: ["User"],
+        }),
         deleteUser: builder.mutation({
             query: id => ({
-                url: `user/${id}/delete`,
+                url: `user/delete`,
                 method: "POST",
-            })
+            }),
+            invalidatesTags: ["User"],
         }),
-        getPublicContent: builder.query({
-            query: () => ({
-                url: "test/all",
-                method: "GET"
-            })
-        }),
-        getUserBoard: builder.query({
-            query: () => ("test/user")
-        }),
-        getAdminBoard: builder.query({
-            query: () => ("test/admin")
+        getUserPhotos: builder.query({
+            query: () => `vault`,
+            providesTags: ["Photo"],
         }),
         uploadPhoto: builder.mutation({
             // query: ({ email, file }) => ({
@@ -91,10 +89,10 @@ const api = createApi({
             // queryFn: async ({ options, input, context }) => {
             //     const { email, file } = input;
             //     const { url, method, body } = options;
-            
+
             //     const formData = new FormData();
             //     formData.append("file", file);
-            
+
             //     const axiosConfig = {
             //       method,
             //       url,
@@ -108,13 +106,13 @@ const api = createApi({
             //         }
             //       },
             //     };
-            
+
             //     const response = await axios(axiosConfig);
             //     return response.data;
             //   },
-            queryFn: async ({username, file}, api) => {
+            queryFn: async ({ file }, api) => {
                 try {
-                    const result = await axios.post(`/api/vault/${username}/upload`, file, {
+                    const result = await axios.post(`/api/vault/upload`, file, {
                         onUploadProgress: progressEvent => {
                             let percentCompleted = Math.round((progressEvent.loaded / progressEvent.total) * 100)
                             console.log("percent completed:")
@@ -135,20 +133,18 @@ const api = createApi({
                     api.dispatch(setUploadProgress(0))
                 }
             },
-            
-        }),
-        getUserPhotos: builder.query({
-            query: username => `vault/${username}`
+            invalidatesTags: ["Photo"],
         }),
         deleteUserPhotos: builder.mutation({
-            query: ({ username, photoIds }) => ({
-                url: `vault/${username}/delete`,
+            query: ({ photoIds }) => ({
+                url: `vault/delete`,
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                  },
+                },
                 body: JSON.stringify(photoIds)
             }),
+            invalidatesTags: ["Photo"],
         }),
     })
 })
@@ -157,13 +153,11 @@ export const {
     useLoginMutation,
     useRegistrationMutation,
     useLogoutMutation,
-    useGetUserBoardQuery,
-    useGetPublicContentQuery,
-    useGetAdminBoardQuery,
     useGetUserPhotosQuery,
     useUploadPhotoMutation,
     useDeleteUserPhotosMutation,
-    useDeleteUserMutation
+    useDeleteUserMutation,
+    useGetUserQuery,
 } = api;
 
 export default api;

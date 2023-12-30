@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../api/api";
-import { setCredentials } from "../slices/authSlice";
+import { logIn } from "../slices/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ const Login = () => {
 
     try {
       const userData = await login({ email, password }).unwrap();
-      dispatch(setCredentials(userData));
+      dispatch(logIn());
       navigate("/vault");
     } catch (error) {
       if (!error.status) {
