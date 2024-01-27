@@ -30,18 +30,20 @@ aws:
   s3:
     accessKey: ${AWS_S3_ACCESSKEY}
     secretKey: ${AWS_S3_SECRETKEY}
+    cdnLink: ${AWS_CDN}
 
     # DELETE BEFORE PUSH TO REPO
 #    accessKey:
 #    secretKey:
+#    cdnLink:
 
 jwt:
   secretKey: ${JWT_SECRETKEY}
-#  secretKey: 51655468576D5A7134743677397A24432646294A404E635266556A586E327235
+#  secretKey:
   accessTokenCookieName: mh-jwt-access
-  accessTokenExpirationMs: 3000000
+  accessTokenExpirationMs: 600000
   refreshTokenCookieName: mh-jwt-refresh
-  refreshTokenExpirationMs: 18000000
+  refreshTokenExpirationMs: 1800000
 
 server:
   port: ${PORT:8080}

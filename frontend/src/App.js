@@ -3,9 +3,6 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-// import NavBar from "./app/components/NavBar";
-// import AnimatedRoutes from "./app/components/AnimatedRoutes";
-// import { useLogoutMutation } from "./app/api/api";
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import RootLayout from "./app/layouts/RootLayout";
 import Home from "./app/pages/Home";
@@ -14,10 +11,9 @@ import Register from "./app/pages/Register";
 import AuthLayout from "./app/layouts/AuthLayout";
 import Profile from "./app/pages/Profile";
 import Vault from "./app/pages/Vault";
-import Album from "./app/components/Album";
 import Photo from "./app/components/Photo";
-import { photoGalleryLoader } from "./app/components/PhotoGallery";
-import api from "./app/api/api";
+import NotFound from "./app/pages/NotFound";
+import Gallery from "./app/components/Gallery";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,13 +25,13 @@ const router = createBrowserRouter(
 
       <Route element={<AuthLayout />}>
         <Route path="profile" element={<Profile />} />
-
         <Route path="vault" element={<Vault />} >
-          {/* <Route index element={<Album />} /> */}
-          <Route path="photo/:photoId" />
+          <Route index element={<Gallery />} />
+          <Route path="photo/:photoId" element={<Photo />} />
         </Route>
-
       </Route>
+
+      <Route path="*" element={<NotFound />} />
 
     </Route>
   )
@@ -43,18 +39,9 @@ const router = createBrowserRouter(
 
 const App = () => {
 
-  // const [logoutMutation, logoutMutationResult] = useLogoutMutation()
-
   return (
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   )
-
-  // return (
-  //   <>
-  //     <NavBar logoutMutation={logoutMutation} logoutMutationResult={logoutMutationResult} />
-  //     <AnimatedRoutes />
-  //   </>
-  // );
 };
 
 export default App;

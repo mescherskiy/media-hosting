@@ -1,46 +1,37 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
-import { selectAuth, selectCurrentUser } from "../slices/authSlice";
+import { selectAuth } from "../slices/authSlice";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useGetUserQuery } from "../api/api";
-// import { useLogoutMutation } from "../api/api";
-
+import Notification from "../components/Notification";
+import { Container, Button } from "react-bootstrap";
 
 const Home = () => {
   const authenticated = useSelector(selectAuth)
-  // const [logout] = useLogoutMutation()
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     logout()
-  //   }
-  // }, [user, logout])
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
-      <section className="main d-flex flex-column justify-content-center align-items-center text-white">
-        <h1 className="p-3">Experience your memories like never before</h1>
-        <h2 className="magic-text p-3">Create. Collect. Share.</h2>
+    <motion.div className="homepage d-flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
+      <Notification />
+      <Container className="d-flex flex-column justify-content-center align-items-center text-white">
+        {/* <h1 className="p-3">Experience your memories like never before</h1> */}
+        <h1 className="magic-text p-3">Create. Collect. Share.</h1>
         {authenticated
           ? (
-              <Link to="/vault" className="btn-homepage btn btn-lg btn-outline-light m-3">
-              MY VAULT
-              </Link>
+            <Link to="/vault">
+              <Button variant="outline-light" size="lg" className="btn-homepage m-3">
+                MY VAULT
+              </Button>
+            </Link>
           )
           : (
-              <Link to="/login" className="btn-homepage btn btn-lg btn-outline-light m-3">
-              BEGIN
-              </Link>
+            <Link to="/login">
+              <Button variant="outline-light" size="lg" className="btn-homepage m-3">
+                BEGIN
+              </Button>
+            </Link>
           )}
-      </section>
+      </Container>
     </motion.div>
-
-    // <div className="container">
-    //   <header className="jumbotron">
-    //     <h3>{response.message}</h3>
-    //   </header>
-    // </div>
   );
 };
 

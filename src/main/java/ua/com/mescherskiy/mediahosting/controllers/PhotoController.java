@@ -2,6 +2,7 @@ package ua.com.mescherskiy.mediahosting.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
 import ua.com.mescherskiy.mediahosting.services.PhotoService;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -52,17 +54,24 @@ public class PhotoController {
         }
     }
 
+//    @GetMapping("/{photoId}")
+//    public byte[] downloadUserPhotoById(@PathVariable("photoId") Long photoId,
+//                                        @RequestParam("size") String size,
+//                                        HttpServletRequest request) {
+//        if (size.equals("thumbnail")) {
+//            return photoService.downloadThumbnail(photoId, request);
+//        } else if (size.equals("full")) {
+//            return photoService.downloadOriginalPhoto(photoId, request);
+//            return photoService.getCurrentPhotoUrl(photoId, request);
+//        } else {
+//            throw new IllegalArgumentException("Invalid photo size");
+//        }
+//    }
+
     @GetMapping("/{photoId}")
-    public byte[] downloadUserPhotoById(@PathVariable("photoId") Long photoId,
-                                        @RequestParam("size") String size,
-                                        HttpServletRequest request) {
-        if (size.equals("thumbnail")) {
-            return photoService.downloadThumbnail(photoId, request);
-        } else if (size.equals("full")) {
-            return photoService.downloadOriginalPhoto(photoId, request);
-        } else {
-            throw new IllegalArgumentException("Invalid photo size");
-        }
+    public ResponseEntity<?> redirectToCurrentPhotoUrl(@PathVariable("photoId") Long photoId, HttpServletRequest request) {
+            String actualPhotoUrl = photoService.getCurrentPhotoUrl(photoId, request);
+            return ResponseEntity.status(HttpStatus.SC_MOVED_TEMPORARILY).location(URI.create(actualPhotoUrl)).build();
     }
 
     @PostMapping("/delete")

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 import { useRegistrationMutation } from "../api/api";
+import { Button, Col, Form } from "react-bootstrap";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -18,21 +19,9 @@ const Register = () => {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [registration, registrationResult] = useRegistrationMutation();
-
+  
   const checkUsername = () => {
     const cleanUsername = username.trim()
-    const errorMessages = {}
-
-    // if (!cleanUsername) {
-    //   errorMessages.username = "This field is required"
-    // } else if (cleanUsername.length < 3 || cleanUsername.length > 20) {
-    //   errorMessages.username = "Username must be between 3 and 20 characters"
-    // }
-
-    // setInputErrors((prevErrors) => ({
-    //   ...prevErrors,
-    //   ...errorMessages,
-    // }))
 
     if (!cleanUsername) {
       setInputErrors((rest) => ({
@@ -86,34 +75,32 @@ const Register = () => {
 
     if (Object.values(inputErrors).every(value => value === "")) {
       try {
-        console.log(username)
-        console.log(email)
-        console.log(password)
-        await registration({ username, email, password }).unwrap()
-        setSuccessMsg("User created successfully!")
+        const res = await registration({ username, email, password }).unwrap()
+        if (res.ok) {
+          setSuccessMsg("User created successfully!")
+        } else {
+          setErrMsg("Error!" + res.data.message)
+        }
       } catch (error) {
-        setErrMsg(error.message)
+        setErrMsg(error.data.message)
+        console.log(error.data.message)
       }
     }
   };
 
-  if (registrationResult.isError) {
-    setErrMsg(registrationResult.error.message)
-  }
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <section className="col-md-12 signup-form mt-5 text-white-50">
+    <motion.div className="d-flex justify-content-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <div className="signup-form pt-5 text-white-50">
         <div className="form-card">
           <h2 className="text-center text-white pt-4 pb-1">Registration</h2>
-          <form className="form" onSubmit={handleRegister}>
-
-            <div className="form-group mb-3">
-              <input
+          <Form className="form" onSubmit={handleRegister}>
+            <Form.Group className="form-group mb-3">
+              <Form.Control
                 name="username"
                 type="text"
                 required
                 value={username}
+                autoComplete="current-username"
                 onChange={(e) => {
                   setUsername(e.target.value);
                   setInputErrors((rest) => ({
@@ -122,18 +109,19 @@ const Register = () => {
                   }));
                 }}
                 onBlur={checkUsername}
-                className={`${inputErrors.username ? "is-invalid" : ""}`}
+                isInvalid={inputErrors.username ? "is-invalid" : ""}
               />
-              <label htmlFor="username">Username</label>
-              {inputErrors.username && <div className="invalid-feedback">{inputErrors.username}</div>}
-            </div>
+              <Form.Label htmlFor="username">Username</Form.Label>
+              <Form.Control.Feedback type="invalid">{inputErrors.username}</Form.Control.Feedback>
+            </Form.Group>
 
-            <div className="form-group mb-3">
-              <input
+            <Form.Group className="form-group mb-5 mt-5">
+              <Form.Control
                 name="email"
                 type="text"
                 required
                 value={email}
+                autoComplete="current-email"
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setInputErrors((rest) => ({
@@ -142,18 +130,19 @@ const Register = () => {
                   }));
                 }}
                 onBlur={checkEmail}
-                className={`${inputErrors.email ? "is-invalid" : ""}`}
+                isInvalid={inputErrors.email ? "is-invalid" : ""}
               />
-              <label htmlFor="email">E-mail</label>
-              {inputErrors.email && <div className="invalid-feedback">{inputErrors.email}</div>}
-            </div>
+              <Form.Label htmlFor="email">E-mail</Form.Label>
+              <Form.Control.Feedback type="invalid">{inputErrors.email}</Form.Control.Feedback>
+            </Form.Group>
 
-            <div className="form-group">
-              <input
+            <Form.Group className="form-group">
+              <Form.Control
                 name="password"
                 type="password"
                 required
                 value={password}
+                autoComplete="current-password"
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setInputErrors((rest) => ({
@@ -162,14 +151,14 @@ const Register = () => {
                   }));
                 }}
                 onBlur={checkPassword}
-                className={`${inputErrors.password ? "is-invalid" : ""}`}
+                isInvalid={inputErrors.password ? "is-invalid" : ""}
               />
-              <label htmlFor="password">Password</label>
-              {inputErrors.password && <div className="invalid-feedback">{inputErrors.password}</div>}
-            </div>
+              <Form.Label htmlFor="password">Password</Form.Label>
+              <Form.Control.Feedback type="invalid">{inputErrors.password}</Form.Control.Feedback>
+            </Form.Group>
 
-            <div className="form-group d-flex justify-content-between align-items-baseline">
-              <button
+            <Form.Group as={Col} className="form-group reg-btn-and-err d-flex justify-content-between">
+              <Button
                 type="submit"
                 className="submit-btn"
                 disabled={registrationResult.isLoading}
@@ -183,13 +172,13 @@ const Register = () => {
                 <span></span>
 
                 Submit
-              </button>
+              </Button>
               {errMsg && <div className="error-response">{errMsg}</div>}
               {successMsg && <div className="success-registration">{successMsg}</div>}
-            </div>
-          </form>
+            </Form.Group>
+          </Form>
         </div>
-      </section>
+      </div>
     </motion.div>
   );
 };

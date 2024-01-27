@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -8,8 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useDeleteUserMutation, useGetUserQuery } from "../api/api";
 
 const Profile = () => {
-  const { data:user, isSuccess, isError, error, isFetching, isLoading } = useGetUserQuery()
-  
+  const { data: user, isError, error, isFetching, isLoading } = useGetUserQuery()
 
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteUser, response] = useDeleteUserMutation();
@@ -27,12 +25,6 @@ const Profile = () => {
     }
   }
 
-  //const user = JSON.parse(localStorage.getItem("user"));
-
-  // if (!user) {
-  //   return <Navigate to="/login" />;
-  // }
-
   if (isFetching || isLoading) {
     return <div>Loading...</div>
   }
@@ -41,53 +33,26 @@ const Profile = () => {
     return <div>{error}</div>
   }
 
-  if (isSuccess) {
-    console.log(user)
-  }
-
   return (
     <motion.div className="container profile-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <div className="profile-img">
-        <img src="user-profile-icon.jpg" alt="Profile photo" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="3 3 18 18" fill="currentColor" className="w-6 h-6">
+          <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clipRule="evenodd" />
+        </svg>
       </div>
-      <header className="jumbotron">
+      <div className="jumbotron">
         <h3>
           <strong>Profile</strong>
           <br />
           <br />
         </h3>
-      </header>
+      </div>
       <p>
         Username: <strong>{user.name}</strong>
       </p>
       <p>
         Email: <strong>{user.email}</strong>
       </p>
-      {/* <button className="btn btn-danger" onClick={handleShowModal}>
-        Delete profile
-        </button>
-
-      {showDeleteModal && (
-        <div className="modal fade" tabIndex="-1" role="dialog">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Modal title</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="modal-body">
-              <p>Are you sure you want to delete your profile?</p>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-danger">Delete</button>
-              <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      )} */}
       <Button variant="danger" onClick={handleShowModal}>
         Delete profile
       </Button>

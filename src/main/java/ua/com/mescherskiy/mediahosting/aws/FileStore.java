@@ -33,16 +33,16 @@ public class FileStore {
 
     public void save(String path,
                      String fileName,
-                     Optional<Map<String, String>> optionalMetadata,
+                     Optional<ObjectMetadata> optionalMetadata,
                      InputStream inputStream) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        optionalMetadata.ifPresent(map -> {
-            if (!map.isEmpty()) {
-                map.forEach(metadata::addUserMetadata);
-            }
-        });
+//        ObjectMetadata metadata = new ObjectMetadata();
+//        optionalMetadata.ifPresent(map -> {
+//            if (!map.isEmpty()) {
+//                map.forEach(metadata::addUserMetadata);
+//            }
+//        });
         try {
-            s3.putObject(path, fileName, inputStream, metadata);
+            s3.putObject(path, fileName, inputStream, optionalMetadata.orElse(new ObjectMetadata()));
         } catch (AmazonServiceException e) {
             throw new IllegalStateException("Failed to store file to S3", e);
         }

@@ -1,31 +1,67 @@
-// import React, { useState } from "react";
-// import GooglePhoto from "react-google-photo";
-// import { useOutletContext, useParams } from "react-router-dom";
+import React, { useCallback, useEffect } from "react";
+import GooglePhoto from "react-google-photo";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { selectIndex, selectIsOpen, selectPhotos, setIndex, setIsOpen } from "../slices/photoSlice";
+import { checkUser } from "../layouts/AuthLayout";
+import { useGetUserQuery } from "../api/api";
 
-// const Photo = () => {
+const Photo = () => {
 
-//     const [photos, open, setOpen, index, setIndex, selectedPhotos, setSelectedPhotos, handleChangeIndex, handleClose] = useOutletContext()
+    const photos = useSelector(selectPhotos)
+    const index = useSelector(selectIndex)
+    const isOpen = useSelector(selectIsOpen)
 
-//     const { photoId } = useParams()
+    const getUserQuery = useGetUserQuery()
 
-//     console.log("photos in Photo: ", photos)
-//     console.log("index in Photo: ", index)
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-//     const photoIndex = photos.findIndex((photo) => photo.id == photoId)
-//     console.log(photoIndex)
+    const { photoId } = useParams()
 
-//     return (
-//         <div className="photoooo">
-//             <GooglePhoto
-//                 open={open}
-//                 src={photos}
-//                 srcIndex={photoIndex}
-//                 //   onChangeIndex={handleChangeIndex}
-//                 onClose={handleClose}
-//             />
-//         </div>
+    useEffect(() => {
+        if (photos.length > 0) {
+            const newIndex = photos.findIndex((photo) => String(photo.id) === photoId);
+            if (newIndex !== -1) {
+                dispatch(setIndex(newIndex));
+            }
+        }
 
-//     );
-// };
+    }, [photos, photoId, dispatch]);
 
-// export default Photo;
+
+    useEffect(() => {
+        console.log("Updated index: " + index);
+    }, [index, photos]);
+
+    const handleChangeIndex = useCallback(
+        (newIndex) => {
+            dispatch(setIndex(newIndex))
+            navigate(`../photo/${photos[newIndex].id}`);
+            checkUser(getUserQuery, dispatch, navigate)
+        }, [dispatch, navigate, photos, getUserQuery]
+    );
+
+    const handleClose = () => {
+        dispatch(setIsOpen(false))
+        navigate("/vault")
+    }
+
+    if (!photos || photos.length === 0) {
+        return <div>Loading...</div>;
+      }
+
+    return (
+        <div>
+            <GooglePhoto
+                open={isOpen}
+                src={photos}
+                srcIndex={index}
+                onChangeIndex={handleChangeIndex}
+                onClose={handleClose}
+            />
+        </div>
+    );
+};
+
+export default Photo;

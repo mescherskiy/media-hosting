@@ -1,13 +1,13 @@
 {
   "name": "mediahosting_frontend_js",
   "version": "0.2.0",
+  "private": true,
   "proxy": {
     "/api": {
       "target": "https://media-hosting-beedbd9a2f9f.herokuapp.com/api",
       "ws": true
     }
   },
-  "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
@@ -17,6 +17,7 @@
     "bootstrap": "^5.3.2",
     "framer-motion": "^10.15.1",
     "http-proxy-middleware": "^2.0.6",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.0",
     "react-dom": "^18.2.0",

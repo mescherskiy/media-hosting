@@ -1,3 +1,13 @@
+#root>div {
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; */
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding-top: 10vh;
+}
+
 .login-form,
 .signup-form {
   max-width: 350px;
@@ -27,21 +37,42 @@
   border-radius: 50%;
 }
 
-.navbar {
-  height: 10vh;
+header {
+  min-height: 10dvh;
+  max-height: 250px;
   background-color: #00000070;
+  z-index: 10;
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+
+nav {
+  height: -webkit-fill-available;
 }
 
 a.navbar-brand {
   font-weight: 900;
 }
 
-section.main {
-  height: 90vh;
+main {
+  flex-grow: 1;
+  min-height: 85vh;
+}
+
+footer {
+  height: 5dvh;
+  background-color: #00000030;
+  color: rgb(100, 100, 100);
+  font-size: smaller;
+}
+
+.copyright-name {
+  color: rgb(130, 130, 130);
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
   background-image: linear-gradient(16deg, #28287a 5%, #7272c2 90%);
 }
 
@@ -64,6 +95,10 @@ section.main {
   to {
     background-position: -200% center;
   }
+}
+
+.homepage {
+  min-height: inherit;
 }
 
 .magic-text {
@@ -107,6 +142,7 @@ section.main {
   color: white;
   outline: none;
   border-radius: 0%;
+  box-shadow: none;
 }
 
 .form-group input:focus {
@@ -115,6 +151,8 @@ section.main {
   /* font-size: 17px; */
   /* font-weight: bold; */
   color: white;
+  background-color: inherit;
+  box-shadow: none;
 }
 
 .form-group .invalid-feedback {
@@ -155,9 +193,13 @@ section.main {
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
+.form-group input.is-invalid:focus {
+  box-shadow: none;
+}
+
 .form-group .submit-btn {
   position: relative;
-  display: inline-block;
+  display: block;
   padding: 10px 20px;
   background-color: transparent;
   border: none;
@@ -167,9 +209,12 @@ section.main {
   text-transform: uppercase;
   overflow: hidden;
   transition: .5s;
-  margin-top: 40px;
   letter-spacing: 4px;
   font-weight: bold;
+}
+
+.reg-btn-and-err {
+  height: 4rem;
 }
 
 .form-group .submit-btn:hover {
@@ -273,10 +318,20 @@ section.main {
 .form-card .error-response {
   color: red;
   text-transform: uppercase;
+  max-width: 50%;
 }
 
 .form-card .success-registration {
   color: rgb(0, 200, 0);
+}
+
+.registration-string {
+  color: gray;
+  font-size: small;
+}
+
+.registration-string a {
+  color: var(--yellow);
 }
 
 .checkBox {
@@ -327,6 +382,10 @@ section.main {
   margin: 0 auto;
 }
 
+.react-google-photo-arrow-button-return {
+  top: 10dvh;
+}
+
 .close-button {
   position: absolute;
   top: 10px;
@@ -357,14 +416,14 @@ section.main {
   border-radius: 16px; */
 }
 
+.navbar-collapse {
+  flex-grow: 0;
+}
+
 .iconDiv {
   height: 36px;
   width: 36px;
   margin: 0 5px;
-  /* margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 4px;
-  padding: 4px; */
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
@@ -373,6 +432,26 @@ section.main {
   cursor: pointer;
   transition: width 300ms ease-in-out 0s, background-color 300ms linear 200ms;
   color: white;
+}
+
+@media screen and (max-width: 450px) {
+  .iconDiv {
+    width: fit-content;
+    overflow: visible;
+    padding: 0 10px;
+  }
+
+  .iconDiv:hover {
+    width: inherit;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .form-card {
+    width: 300px;
+  }
 }
 
 .iconSVG {
@@ -469,6 +548,10 @@ section.main {
   margin: 1.5rem 0;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .dropzone.disabled {
@@ -479,7 +562,12 @@ section.main {
 .dropzone p {
   text-align: center;
   margin: 0;
-  padding: 20px;
+  padding: 16px;
+}
+
+.upload-icon {
+  width: 20px;
+  margin-top: 20px;
 }
 
 .dropzone-btn {
@@ -538,7 +626,29 @@ section.main {
   stroke: white;
 }
 
+.notification {
+  overflow: hidden;
+  position: fixed;
+  top: -100px;
+  left: calc(50% - 100px);
+  background-color: var(--yellow);
+  color: black;
+  padding: 25px;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease, top 0.5s cubic-bezier(0.68, -0.55, 0.25, 1.35);
+}
 
+.notification.visible {
+  top: 10px;
+  opacity: 1;
+}
 
 .sidebar-wrapper {
   display: flex;
@@ -680,7 +790,7 @@ section.main {
   position: absolute;
   overflow: hidden;
   left: calc(50% - 50px);
-  top: -50px;
+  top: -55px;
 }
 
 .profile-img img {

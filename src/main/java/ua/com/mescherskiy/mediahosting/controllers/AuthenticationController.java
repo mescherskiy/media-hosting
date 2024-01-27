@@ -40,7 +40,7 @@ public class AuthenticationController {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         return service.register(request) ?
                 ResponseEntity.ok().body(new MessageResponse("User registered successfully!")) :
-                ResponseEntity.badRequest().body(new MessageResponse("Error: user with this email already exists"));
+                ResponseEntity.badRequest().body(new MessageResponse("User with this email already exists"));
     }
 
     @PostMapping("/signin")

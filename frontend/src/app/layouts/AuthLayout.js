@@ -1,21 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { selectAuth, selectCurrentUser } from '../slices/authSlice';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { logOut, selectAuth } from '../slices/authSlice';
+import {  Outlet, useNavigate } from 'react-router-dom';
 import { useGetUserQuery } from '../api/api';
 
+export const checkUser = async (getUserQuery, dispatch, navigate) => {
+    try{
+        const result = await getUserQuery.refetch()
+        if (result.error && result.error.status !== 403) {
+            dispatch(logOut())
+            navigate("/", {replace: true})
+        }
+    } catch (error) {
+        console.error("Error while checking user: ", error)
+    }
+}
+
 const AuthLayout = () => {
-    // const user = useGetUserQuery().data
     const isAuthenticated = useSelector(selectAuth)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const getUserQuery = useGetUserQuery()
 
     useEffect(() => {
-        console.log(isAuthenticated)
-        if (!isAuthenticated) {
+        if (isAuthenticated) {
+            checkUser(getUserQuery, dispatch, navigate)
+        }
+        else {
             navigate("/", {replace: true}) 
         }
-    }, [isAuthenticated, navigate])
-
+    }, [isAuthenticated, navigate, dispatch])
 
     return (
         <Outlet />

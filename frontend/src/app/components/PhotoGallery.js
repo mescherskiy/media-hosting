@@ -25,11 +25,19 @@ const PhotoGallery = ({ selectedPhotos, setSelectedPhotos, photos }) => {
         (newIndex) => {
             setIndex(newIndex)
             navigate(`photo/${photos[newIndex].id}`);
-        }, [navigate]);
+        }, [navigate, photos]);
+
+    useEffect(() => {
+        const photoId = location.pathname.split("/photo/")[1];
+        const newIndex = photos.findIndex((photo) => String(photo.id) === photoId);
+        if (newIndex !== -1) {
+            setIndex(newIndex);
+        }
+    }, [location.pathname, photos]);
 
     useEffect(() => {
         console.log("Updated index: " + index);
-    }, [index]);
+    }, [index, photos]);
 
     const handleClose = () => {
         setOpen(false)

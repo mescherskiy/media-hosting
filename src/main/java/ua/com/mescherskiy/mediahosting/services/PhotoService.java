@@ -1,10 +1,12 @@
 package ua.com.mescherskiy.mediahosting.services;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import ua.com.mescherskiy.mediahosting.repo.PhotoRepository;
 import ua.com.mescherskiy.mediahosting.repo.ThumbnailRepository;
 import ua.com.mescherskiy.mediahosting.repo.UserRepository;
 import ua.com.mescherskiy.mediahosting.security.jwt.JwtService;
+import ua.com.mescherskiy.mediahosting.security.services.UserDetailsImpl;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,6 +34,9 @@ import static org.apache.http.entity.ContentType.*;
 @Service
 @RequiredArgsConstructor
 public class PhotoService {
+
+    @Value("${aws.s3.cdnLink}")
+    private String cdnLink;
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
 
@@ -67,6 +73,12 @@ public class PhotoService {
 //        return photos.stream().map(photo -> new PhotoResponse(
 //                "http://localhost:8080/api/vault/" + photo.getId(),
 //                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+
+//        UserDetailsImpl user = jwtService.extractUserDetailsFromToken(jwtService.getAccessTokenFromCookies(request));
+//        List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(user.getEmail());
+//        return photos.stream().map(photo -> new PhotoResponse(
+//                "https://d17a7s0fri80p3.cloudfront.net/" + user.getId() + "/" + photo.getFileName(),
+//                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
     }
 
 //    public Optional<Photo> getPhotoByFilenameOrPath(String fileName, String path) {
@@ -82,8 +94,8 @@ public class PhotoService {
         isImage(file);
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
-        Map<String, String> metadata = extractMetadata(file);
-
+//        Map<String, String> metadata = extractMetadata(file);
+        //ObjectMetadata metadata = extractMetadata(file);
         String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
 
         BufferedImage image = ImageIO.read(file.getInputStream());
@@ -91,11 +103,14 @@ public class PhotoService {
         int height = image.getHeight();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(image)
-                .outputFormat("jpg")
-                .outputQuality(0.8)
+                .outputFormat("jpeg")
+//                .outputQuality(0.8)
                 .size(height, width)
                 .toOutputStream(outputStream);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(inputStream.available());
+        metadata.setContentType(file.getContentType());
 
         Photo photo = Photo.builder()
                 .fileName(file.getOriginalFilename())
@@ -172,7 +187,7 @@ public class PhotoService {
     public byte[] downloadOriginalPhoto(Long photoId, HttpServletRequest request) {
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);
-        String path = String.format("%s/%s", Bucket.MEDIA_HOSTING.getBucketName(), user.getId());
+        String path = String.format("%s/%s", cdnLink, user.getId());
         String key = "";
         if (user != null && user.getPhotos().stream().anyMatch(photo -> photo.getId().equals(photoId))) {
             key = photoRepository.findById(photoId).get().getFileName();
@@ -180,6 +195,20 @@ public class PhotoService {
             return fileStore.download(path, key);
         }
         return new byte[0];
+    }
+
+    public String getCurrentPhotoUrl(Long photoId, HttpServletRequest request) {
+        String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
+        User user = isUserExists(username);
+        String path = String.format("%s/%s", cdnLink, user.getId());
+        String key = "";
+        if (user != null && user.getPhotos().stream().anyMatch(photo -> photo.getId().equals(photoId))) {
+            key = photoRepository.findById(photoId).get().getFileName();
+            String actualPhotoUrl = path + "/" + key;
+            logger.info("CDN photoURL: " + actualPhotoUrl);
+            return actualPhotoUrl;
+        }
+        return null;
     }
 
     public byte[] downloadThumbnail(Long photoId, HttpServletRequest request) {
@@ -230,10 +259,17 @@ public class PhotoService {
 //
 //    }
 
-    private Map<String, String> extractMetadata(MultipartFile file) {
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("Content-type", file.getContentType());
-        metadata.put("Content-Length", String.valueOf(file.getSize()));
+//    private Map<String, String> extractMetadata(MultipartFile file) {
+//        Map<String, String> metadata = new HashMap<>();
+//        metadata.put("Content-type", file.getContentType());
+//        metadata.put("Content-Length", String.valueOf(file.getSize()));
+//        return metadata;
+//    }
+
+    private ObjectMetadata extractMetadata(MultipartFile file) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
         return metadata;
     }
 

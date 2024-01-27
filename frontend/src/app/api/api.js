@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { logOut } from "../slices/authSlice";
+import { logOut, setNotificationMessage, showNotification } from "../slices/authSlice";
 import { setUploadProgress } from "../slices/uploadSlice";
 
 import axios from "axios";
@@ -16,19 +16,26 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
     let response = await baseQuery(args, api, extraOptions);
 
-    const error = response.error
+    const error = response?.error
     if (error) {
+        console.log("Error in api: ", error)
         if (error.status === 403) {
+            localStorage.setItem("lastVisitedPath", window.location.pathname)
             const refreshResponse = await baseQuery("auth/refreshtoken", api, extraOptions);
             if (refreshResponse?.data) {
                 response = await baseQuery(args, api, extraOptions);
             } else {
                 api.dispatch(logOut());
+                api.dispatch(setNotificationMessage(refreshResponse.error.data.message))
+                api.dispatch(showNotification(true))
             }
         } else {
             api.dispatch(logOut());
+            return null
         }
     }
+
+    console.log("Response in api: ", response)
 
     // else if (response?.error?.status === 401) {
     //     console.log(response)

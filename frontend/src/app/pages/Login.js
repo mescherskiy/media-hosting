@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../api/api";
 import { logIn } from "../slices/authSlice";
+import { setIsOpen } from "../slices/photoSlice";
+import { Button, Col, Form } from "react-bootstrap";
 
 const Login = () => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
@@ -13,17 +16,33 @@ const Login = () => {
   const [invalidPasswordlMsg, setInvalidPasswordMsg] = useState("");
 
   const [login, loginResult] = useLoginMutation();
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const handleInputChange = (e, setValue, setInvalidMsg) => {
+    const value = e.target.value
+    setValue(value)
+    setInvalidMsg(value ? "" : "This field is required")
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const userData = await login({ email, password }).unwrap();
+      await login({ email, password }).unwrap();
       dispatch(logIn());
-      navigate("/vault");
+
+      const lastVisitedPath = localStorage.getItem("lastVisitedPath")
+      if (lastVisitedPath) {
+        localStorage.removeItem("lastVisitedPath")
+        const pattern = /\/photo\/\d+$/
+        if (pattern.test(lastVisitedPath)) {
+          dispatch(setIsOpen(true))
+        }
+        navigate(lastVisitedPath)
+      } else {
+        navigate("/vault");
+      }
     } catch (error) {
       if (!error.status) {
         setErrMsg("No Server Response");
@@ -38,55 +57,45 @@ const Login = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <section className="login col-md-12 login-form mt-5 text-white-50">
+    <motion.div className="d-flex justify-content-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <div className="login login-form pt-5 text-white-50">
         <div className="form-card">
           <h2 className="text-center text-white pt-4 pb-1">Login</h2>
-          <form className="form" onSubmit={handleLogin}>
-            <div className="form-group mb-3">
-              <input
+          <Form className="form" onSubmit={handleLogin}>
+            <Form.Group className="form-group mb-5">
+              <Form.Control
                 name="email"
                 type="text"
                 required
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setInvalidEmailMsg("");
-                }}
-                onBlur={() => {
-                  if (!email) {
-                    setInvalidEmailMsg("This field is required!");
-                  }
-                }}
-                className={`${invalidEmailMsg ? "is-invalid" : ""}`}
+                autoComplete="current-email"
+                onChange={(e) => handleInputChange(e, setEmail, setInvalidEmailMsg)}
+                onBlur={() => handleInputChange( { target: { value: email } }, setEmail, setInvalidEmailMsg)}
+                className={invalidEmailMsg ? "is-invalid" : ""}
               />
-              <label htmlFor="email">E-mail</label>
-              {invalidEmailMsg && <div className="invalid-feedback">{invalidEmailMsg}</div>}
-            </div>
+              <Form.Label htmlFor="email">E-mail</Form.Label>
+              {invalidEmailMsg && <Form.Text className="invalid-feedback">{invalidEmailMsg}</Form.Text>}
+            </Form.Group>
 
-            <div className="form-group">
-              <input
+            <Form.Group className="form-group">
+              <Form.Control
                 name="password"
                 type="password"
                 required
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setInvalidPasswordMsg("");
-                }}
-                onBlur={() => {
-                  if (!password) {
-                    setInvalidPasswordMsg("This field is required!");
-                  }
-                }}
-                className={`${invalidPasswordlMsg ? "is-invalid" : ""}`}
+                autoComplete="current-password"
+                onChange={(e) => handleInputChange(e, setPassword, setInvalidPasswordMsg)}
+                onBlur={() => handleInputChange({ target: {value: password} }, setPassword, setInvalidPasswordMsg)}
+                className={invalidPasswordlMsg ? "is-invalid" : ""}
               />
-              <label htmlFor="password">Password</label>
-              {invalidPasswordlMsg && <div className="invalid-feedback">{invalidPasswordlMsg}</div>}
-            </div>
+              <Form.Label htmlFor="password">Password</Form.Label>
+              {invalidPasswordlMsg && <Form.Text className="invalid-feedback">{invalidPasswordlMsg}</Form.Text>}
+            </Form.Group>
 
-            <div className="form-group d-flex justify-content-between align-items-baseline">
-              <button
+            <p className="registration-string text-center">Not registered? <Link to="../register">Create an account</Link></p>
+
+            <Form.Group as={Col} className="form-group d-flex justify-content-between align-items-baseline">
+              <Button
                 type="submit"
                 className="submit-btn"
                 disabled={loginResult.isLoading}
@@ -99,12 +108,12 @@ const Login = () => {
                 <span></span>
                 <span></span>
                 Submit
-              </button>
+              </Button>
               {errMsg && <div className="error-response">{errMsg}</div>}
-            </div>
-          </form>
+            </Form.Group>
+          </Form>
         </div>
-      </section>
+      </div>
     </motion.div>
   );
 };

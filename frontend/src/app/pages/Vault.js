@@ -1,15 +1,43 @@
 import Dropzone from "../components/Dropzone";
 import { useDeleteUserPhotosMutation, useGetUserPhotosQuery } from "../api/api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import PhotoGallery from "../components/PhotoGallery";
+import { useDispatch, useSelector } from "react-redux";
+import { selectPhotos, selectSelectedPhotos, setPhotos, setSelectedPhotos } from "../slices/photoSlice";
+import { Outlet } from "react-router-dom";
+import { Container } from "react-bootstrap"
+import { isEqual } from "lodash"
 
 const Vault = () => {
-    const { data: photoList, isError, error, isLoading, isSuccess } = useGetUserPhotosQuery();
-    const [deletePhotos] = useDeleteUserPhotosMutation();
+    const { data: photos, isSuccess } = useGetUserPhotosQuery();
+    const [deletePhotos, { isLoading: isDeleting }] = useDeleteUserPhotosMutation();
 
-    const [selectedPhotos, setSelectedPhotos] = useState([]);
+    const dispatch = useDispatch()
+
+    const selectedPhotos = useSelector(selectSelectedPhotos)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const currentPhotos = useSelector(selectPhotos)
+
+    const prevPhotosRef = useRef(currentPhotos)
+
+    useEffect(() => {
+        if (isSuccess) {
+            const newPhotos = photos.map((photo) => ({
+                src: photo.url,
+                width: photo.width || 0,
+                height: photo.height || 0,
+                id: photo.id,
+                isSelected: selectedPhotos.includes(photo.id)
+            }))
+
+            if (!isEqual(prevPhotosRef.current, newPhotos)) {
+                console.log(!isEqual(prevPhotosRef.current, newPhotos))
+                console.log("dispatching newPhotos")
+                dispatch(setPhotos(newPhotos))
+                prevPhotosRef.current = newPhotos
+            }
+        }
+    }, [dispatch, photos, isSuccess, selectedPhotos])
 
     useEffect(() => {
         if (selectedPhotos.length > 0) {
@@ -19,52 +47,19 @@ const Vault = () => {
         }
     }, [selectedPhotos])
 
-    const handleDeletePhotos = async ({ selectedPhotos }) => {
-        await deletePhotos({ photoIds: selectedPhotos })
-        setSelectedPhotos([])
-    }
-
-    let content = null
-
-    if (isLoading) {
-        content = <div>Loading...</div>
-    } else if (isError) {
-        content = <div>{error.message}</div>
-    } else if (isSuccess && photoList) {
-        console.log("photos in Vault: ", photoList)
-        const photos = photoList.map((photo) => ({
-            src: `${photo.url}?size=full`,
-            width: photo.width || 0,
-            height: photo.height || 0,
-            id: photo.id,
-            isSelected: selectedPhotos.includes(photo.id)
-        }));
-        content = <PhotoGallery selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} photos={photos}/>
-    }
+    const handleDeletePhotos = useCallback(
+        async ({ selectedPhotos }) => {
+            await deletePhotos({ photoIds: selectedPhotos })
+            dispatch(setSelectedPhotos([]))
+        }, [deletePhotos, dispatch])
 
     return (
-        <div className="container">
+        <Container>
             <Dropzone />
             {isSidebarOpen &&
-                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ selectedPhotos })} />}
-            {/* <Outlet context={[photos, open, setOpen, index, setIndex, selectedPhotos, setSelectedPhotos, handleChangeIndex, handleClose]}
-            // photos={photosList}
-            // open={open}
-            // index={index}
-            // handleToggleSelection={handleToggleSelection}
-            // handleChangeIndex={handleChangeIndex}
-            // handleClose={handleClose}
-            // handlePhotoClick={handlePhotoClick}
-            /> */}
-            {/* <GooglePhoto
-                open={open}
-                src={photos}
-                //   onChangeIndex={handleChangeIndex}
-                onClose={handleClose}
-            /> */}
-            {/* <PhotoGallery selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} photosList={photos}/> */}
-            {content}
-        </div>
+                <Sidebar selectedPhotos={selectedPhotos} handleDeletePhotos={() => handleDeletePhotos({ selectedPhotos })} isDeleting={isDeleting} />}
+            <Outlet />
+        </Container>
     )
 }
 

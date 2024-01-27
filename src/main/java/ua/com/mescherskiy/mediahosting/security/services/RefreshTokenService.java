@@ -55,7 +55,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if(token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RefreshTokenException(token.getToken(), "Refresh token was expired. Please make a new login request");
+            throw new RefreshTokenException("Session timeout. Please login again");
         }
 
         return token;
@@ -76,16 +76,20 @@ public class RefreshTokenService {
         String refreshToken = jwtService.getRefreshTokenFromCookies(request);
 
         if ((refreshToken != null) && (refreshToken.length() > 0)) {
-            return findByToken(refreshToken)
-                    .map(this::verifyExpiration)
-                    .map(RefreshToken::getUser)
-                    .map(user -> {
-                        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(user);
+            try {
+                return findByToken(refreshToken)
+                        .map(this::verifyExpiration)
+                        .map(RefreshToken::getUser)
+                        .map(user -> {
+                            ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(user);
 
-                        return ResponseEntity.ok()
-                                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                                .body(new MessageResponse("Token has been refreshed"));
-                    }).orElseThrow(() -> new RefreshTokenException(refreshToken, "Refresh token is not in database"));
+                            return ResponseEntity.ok()
+                                    .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                                    .body(new MessageResponse("Token has been refreshed"));
+                        }).orElseThrow(() -> new RefreshTokenException("Refresh token is not in database"));
+            } catch (RefreshTokenException exception) {
+                return ResponseEntity.badRequest().body(new MessageResponse(exception.getMessage()));
+            }
         } else {
             return ResponseEntity.badRequest().body(new MessageResponse("Refresh token is empty!"));
         }
