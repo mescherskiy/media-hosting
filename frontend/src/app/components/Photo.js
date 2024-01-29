@@ -31,8 +31,8 @@ const Photo = () => {
 
 
     useEffect(() => {
-        console.log("Updated index: " + index);
-    }, [index, photos]);
+        checkUser(getUserQuery, dispatch, navigate)
+    }, [checkUser, dispatch, navigate]);
 
     const handleChangeIndex = useCallback(
         (newIndex) => {
