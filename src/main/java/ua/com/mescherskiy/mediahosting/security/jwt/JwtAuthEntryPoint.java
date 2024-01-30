@@ -49,16 +49,6 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             body.put("path", request.getServletPath());
             final ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getOutputStream(), body);
-//        } else if (authException.getCause() instanceof NoHandlerFoundException) {
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//            final Map<String, Object> body = new HashMap<>();
-//            body.put("status", HttpServletResponse.SC_NOT_FOUND);
-//            body.put("error", "Page not found");
-//            body.put("message", authException.getMessage());
-//            body.put("path", request.getServletPath());
-//            final ObjectMapper mapper = new ObjectMapper();
-//            mapper.writeValue(response.getOutputStream(), body);
         } else {
             String refreshToken = jwtService.getRefreshTokenFromCookies(request);
             if (refreshToken != null && !refreshToken.isEmpty()) {
@@ -66,8 +56,9 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.sendRedirect("index.html");
-
+            if (!request.getServletPath().endsWith("/error")) {
+                response.sendRedirect("/error");
+            }
             response.addCookie(jwtService.getCleanAccessJWTCookie());
             response.addCookie(jwtService.getCleanRefreshJWTCookie());
 
