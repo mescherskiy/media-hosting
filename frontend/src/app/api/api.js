@@ -31,6 +31,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             }
         } else {
             api.dispatch(logOut());
+            return "404 ERROR!"
             // window.location.href = "/error"
         }
     }

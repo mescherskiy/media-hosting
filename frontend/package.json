@@ -2,12 +2,6 @@
   "name": "mediahosting_frontend_js",
   "version": "0.2.0",
   "private": true,
-  "proxy": {
-    "/api": {
-      "target": "https://media-hosting-beedbd9a2f9f.herokuapp.com",
-      "ws": true
-    }
-  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
