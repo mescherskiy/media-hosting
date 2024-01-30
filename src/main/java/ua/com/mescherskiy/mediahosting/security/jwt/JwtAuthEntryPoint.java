@@ -56,9 +56,9 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            if (!request.getServletPath().endsWith("/error")) {
-                response.sendRedirect("/error");
-            }
+//            if (!request.getServletPath().endsWith("/error")) {
+//                response.sendRedirect("/error");
+//            }
             response.addCookie(jwtService.getCleanAccessJWTCookie());
             response.addCookie(jwtService.getCleanRefreshJWTCookie());
 
