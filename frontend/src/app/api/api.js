@@ -30,8 +30,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
                 api.dispatch(showNotification(true))
             }
         } else {
-            // api.dispatch(logOut());
-            window.location.href = "/error"
+            api.dispatch(logOut());
+            // window.location.href = "/error"
         }
     }
 
