@@ -108,6 +108,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/api/vault/*/*").permitAll()
                 .requestMatchers("/favicon.ico").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/static/**", "/index.html", "/").permitAll()
                 .anyRequest().authenticated()
                 .and()
