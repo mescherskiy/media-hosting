@@ -3,7 +3,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements, createStaticRouter } from "react-router-dom";
 import RootLayout from "./app/layouts/RootLayout";
 import Home from "./app/pages/Home";
 import Login from "./app/pages/Login";
@@ -15,7 +15,7 @@ import Photo from "./app/components/Photo";
 import NotFound from "./app/pages/NotFound";
 import Gallery from "./app/components/Gallery";
 
-const router = createBrowserRouter(
+const router = createStaticRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
 

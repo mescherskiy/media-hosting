@@ -91,16 +91,16 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
-//                .exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authEntryPoint)
-                .exceptionHandling(customize ->
-                        customize
-                                .accessDeniedHandler(accessDeniedHandler)
-                                .authenticationEntryPoint(authEntryPoint)
-                                .defaultAuthenticationEntryPointFor(
-                                        new HttpStatusEntryPoint(HttpStatus.NOT_FOUND),
-                                        new AntPathRequestMatcher("/**")
-                                ))
-//                .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authEntryPoint)
+//                .exceptionHandling(customize ->
+//                        customize
+//                                .accessDeniedHandler(accessDeniedHandler)
+//                                .authenticationEntryPoint(authEntryPoint)
+//                                .defaultAuthenticationEntryPointFor(
+//                                        new HttpStatusEntryPoint(HttpStatus.NOT_FOUND),
+//                                        new AntPathRequestMatcher("/**")
+//                                ))
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()

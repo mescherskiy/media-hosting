@@ -119,25 +119,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        try {
-            filterChain.doFilter(request, response);
-        } catch (NoHandlerFoundException e) {
-//            authEntryPoint.commence(request, response, new NoHandlerFoundException(
-//                    request.getMethod(), request.getContextPath(), e.getHeaders()) {
-//            });
-//            return;
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            final Map<String, Object> body = new HashMap<>();
-            body.put("status", HttpServletResponse.SC_NOT_FOUND);
-            body.put("error", "Page not found");
-            body.put("message", e.getMessage());
-            body.put("path", request.getServletPath());
-            final ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getOutputStream(), body);
-        }
+//        try {
+//            filterChain.doFilter(request, response);
+//        } catch (NoHandlerFoundException e) {
+////            authEntryPoint.commence(request, response, new NoHandlerFoundException(
+////                    request.getMethod(), request.getContextPath(), e.getHeaders()) {
+////            });
+////            return;
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//            final Map<String, Object> body = new HashMap<>();
+//            body.put("status", HttpServletResponse.SC_NOT_FOUND);
+//            body.put("error", "Page not found");
+//            body.put("message", e.getMessage());
+//            body.put("path", request.getServletPath());
+//            final ObjectMapper mapper = new ObjectMapper();
+//            mapper.writeValue(response.getOutputStream(), body);
+//        }
 
-//        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     private String parseJWT(HttpServletRequest request) {
