@@ -5,9 +5,9 @@ import {  Outlet, useNavigate } from 'react-router-dom';
 import { useGetUserQuery } from '../api/api';
 
 export const checkUser = async (getUserQuery, dispatch, navigate) => {
-    try{
+    try {
         const result = await getUserQuery.refetch()
-        if (result.error && result.error.data?.error !== "Access token expired") {
+        if (result?.error && result.error?.data?.error !== "Access token expired") {
             dispatch(logOut())
             navigate("/", {replace: true})
         }
