@@ -41,10 +41,10 @@ jwt:
   secretKey: ${JWT_SECRETKEY}
 #  secretKey:
   accessTokenCookieName: mh-jwt-access
-#  accessTokenExpirationMs: 600000
-  accessTokenExpirationMs: 60000
+  accessTokenExpirationMs: 600000
+#  accessTokenExpirationMs: 60000
   refreshTokenCookieName: mh-jwt-refresh
-#  refreshTokenExpirationMs: 1800000
-  refreshTokenExpirationMs: 120000
+  refreshTokenExpirationMs: 3600000
+#  refreshTokenExpirationMs: 120000
 server:
   port: ${PORT:8080}
