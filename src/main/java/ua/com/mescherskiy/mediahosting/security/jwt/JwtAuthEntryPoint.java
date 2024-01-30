@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import ua.com.mescherskiy.mediahosting.security.services.AuthenticationService;
 import ua.com.mescherskiy.mediahosting.security.services.RefreshTokenService;
 import ua.com.mescherskiy.mediahosting.security.services.UserDetailsImpl;
@@ -41,15 +42,23 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         if (authException.getCause() instanceof ExpiredJwtException) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
             final Map<String, Object> body = new HashMap<>();
             body.put("status", HttpServletResponse.SC_FORBIDDEN);
             body.put("error", "Access token expired");
             body.put("message", authException.getMessage());
             body.put("path", request.getServletPath());
-
             final ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(response.getOutputStream(), body);
+//        } else if (authException.getCause() instanceof NoHandlerFoundException) {
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//            final Map<String, Object> body = new HashMap<>();
+//            body.put("status", HttpServletResponse.SC_NOT_FOUND);
+//            body.put("error", "Page not found");
+//            body.put("message", authException.getMessage());
+//            body.put("path", request.getServletPath());
+//            final ObjectMapper mapper = new ObjectMapper();
+//            mapper.writeValue(response.getOutputStream(), body);
         } else {
             String refreshToken = jwtService.getRefreshTokenFromCookies(request);
             if (refreshToken != null && !refreshToken.isEmpty()) {

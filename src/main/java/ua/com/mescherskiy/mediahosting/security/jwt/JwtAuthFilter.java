@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import ua.com.mescherskiy.mediahosting.security.services.AuthenticationService;
 import ua.com.mescherskiy.mediahosting.security.services.RefreshTokenService;
 import ua.com.mescherskiy.mediahosting.security.services.UserDetailsServiceImpl;
@@ -96,7 +99,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //            mapper.writeValue(response.getOutputStream(), body);
 //            return;
             } catch (IllegalArgumentException e) {
-                // Обработка исключения IllegalArgumentException
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -117,7 +119,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } catch (NoHandlerFoundException e) {
+//            authEntryPoint.commence(request, response, new NoHandlerFoundException(
+//                    request.getMethod(), request.getContextPath(), e.getHeaders()) {
+//            });
+//            return;
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            final Map<String, Object> body = new HashMap<>();
+            body.put("status", HttpServletResponse.SC_NOT_FOUND);
+            body.put("error", "Page not found");
+            body.put("message", e.getMessage());
+            body.put("path", request.getServletPath());
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getOutputStream(), body);
+        }
+
+//        filterChain.doFilter(request, response);
     }
 
     private String parseJWT(HttpServletRequest request) {
