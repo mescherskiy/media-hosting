@@ -1,5 +1,8 @@
 package ua.com.mescherskiy.mediahosting.security;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,24 +19,30 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.server.authorization.HttpStatusServerAccessDeniedHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import ua.com.mescherskiy.mediahosting.exception.AppAccessDeniedHandler;
 import ua.com.mescherskiy.mediahosting.security.jwt.JwtAuthEntryPoint;
 import ua.com.mescherskiy.mediahosting.security.jwt.JwtAuthFilter;
 import ua.com.mescherskiy.mediahosting.security.jwt.JwtService;
 import ua.com.mescherskiy.mediahosting.security.services.UserDetailsServiceImpl;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,8 +91,16 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
-                .exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authEntryPoint)
-                .and()
+//                .exceptionHandling().accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authEntryPoint)
+                .exceptionHandling(customize ->
+                        customize
+                                .accessDeniedHandler(accessDeniedHandler)
+                                .authenticationEntryPoint(authEntryPoint)
+                                .defaultAuthenticationEntryPointFor(
+                                        new HttpStatusEntryPoint(HttpStatus.NOT_FOUND),
+                                        new AntPathRequestMatcher("/**")
+                                ))
+//                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
