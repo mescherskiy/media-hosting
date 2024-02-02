@@ -21,8 +21,8 @@ const Vault = () => {
     const prevPhotosRef = useRef(currentPhotos)
 
     useEffect(() => {
-        if (isSuccess) {
-            const newPhotos = photos.map((photo) => ({
+        if (isSuccess && photos) {
+            const newPhotos = photos?.map((photo) => ({
                 src: photo.url,
                 width: photo.width || 0,
                 height: photo.height || 0,
