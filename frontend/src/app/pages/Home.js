@@ -8,8 +8,8 @@ import { Container, Button } from "react-bootstrap";
 
 const Home = () => {
   const authenticated = useSelector(selectAuth)
-  const buttonName = "START"
-  const linkTo = "/login"
+  let buttonName = "START"
+  let linkTo = "/login"
 
   useEffect(() => {
     if (authenticated) {
