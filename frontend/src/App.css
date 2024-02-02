@@ -101,6 +101,10 @@ footer {
   min-height: inherit;
 }
 
+.homepage a {
+  text-decoration: none;
+}
+
 .magic-text {
   animation: background-pan 3s linear infinite;
   background: linear-gradient(to right,
