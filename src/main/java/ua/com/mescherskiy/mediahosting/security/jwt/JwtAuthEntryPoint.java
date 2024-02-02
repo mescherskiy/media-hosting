@@ -53,12 +53,14 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             String refreshToken = jwtService.getRefreshTokenFromCookies(request);
             if (refreshToken != null && !refreshToken.isEmpty()) {
                 refreshTokenService.deleteByToken(refreshToken);
+            } else {
+                if (!request.getServletPath().endsWith("/")) {
+                    response.sendRedirect("/");
+                }
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            if (!request.getServletPath().endsWith("/")) {
-                response.sendRedirect("/");
-            }
+
             response.addCookie(jwtService.getCleanAccessJWTCookie());
             response.addCookie(jwtService.getCleanRefreshJWTCookie());
 

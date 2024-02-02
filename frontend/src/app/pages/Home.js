@@ -8,8 +8,8 @@ import { Container, Button } from "react-bootstrap";
 
 const Home = () => {
   const authenticated = useSelector(selectAuth)
-  let buttonName = ""
-  let linkTo = ""
+  const buttonName = "START"
+  const linkTo = "/login"
 
   useEffect(() => {
     if (authenticated) {
@@ -28,7 +28,7 @@ const Home = () => {
         {/* <h1 className="p-3">Experience your memories like never before</h1> */}
         <h1 className="magic-text p-3">Create. Collect. Share.</h1>
         <Link to={linkTo}>
-          <Button className="submit-btn">
+          <Button size="lg" className="submit-btn">
             <span></span>
             <span></span>
             <span></span>
