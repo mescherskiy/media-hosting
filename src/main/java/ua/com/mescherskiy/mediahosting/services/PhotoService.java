@@ -113,7 +113,7 @@ public class PhotoService {
         metadata.setContentType(file.getContentType());
 
         Photo photo = Photo.builder()
-                .fileName(file.getOriginalFilename())
+                .fileName(Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s", ""))
                 .path(path)
                 .uploadDate(new Date())
                 .width(width)

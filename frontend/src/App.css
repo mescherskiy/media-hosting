@@ -197,7 +197,7 @@ footer {
   box-shadow: none;
 }
 
-.form-group .submit-btn {
+.submit-btn {
   position: relative;
   display: block;
   padding: 10px 20px;
@@ -217,7 +217,7 @@ footer {
   height: 4rem;
 }
 
-.form-group .submit-btn:hover {
+.submit-btn:hover {
   background-color: #5ac4f9;
   color: white;
   border-radius: 5px;
@@ -227,12 +227,12 @@ footer {
     0 0 100px #5ac4f9;
 }
 
-.form-group .submit-btn span {
+.submit-btn span {
   display: block;
   position: absolute;
 }
 
-.form-group .submit-btn span:nth-child(1) {
+.submit-btn span:nth-child(1) {
   top: 0;
   left: -100%;
   width: 100%;
@@ -252,7 +252,7 @@ footer {
   }
 }
 
-.form-group .submit-btn span:nth-child(2) {
+.submit-btn span:nth-child(2) {
   top: -100%;
   right: 0;
   width: 2px;
@@ -273,7 +273,7 @@ footer {
   }
 }
 
-.form-group .submit-btn span:nth-child(3) {
+.submit-btn span:nth-child(3) {
   bottom: 0;
   right: -100%;
   width: 100%;
@@ -294,7 +294,7 @@ footer {
   }
 }
 
-.form-group .submit-btn span:nth-child(4) {
+.submit-btn span:nth-child(4) {
   bottom: -100%;
   left: 0;
   width: 2px;

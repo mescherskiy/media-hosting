@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectAuth } from "../slices/authSlice";
 import { Link } from "react-router-dom";
@@ -8,6 +8,18 @@ import { Container, Button } from "react-bootstrap";
 
 const Home = () => {
   const authenticated = useSelector(selectAuth)
+  let buttonName = ""
+  let linkTo = ""
+
+  useEffect(() => {
+    if (authenticated) {
+      buttonName = "MY VAULT"
+      linkTo = "/vault"
+    } else {
+      buttonName = "START"
+      linkTo = "/login"
+    }
+  }, [authenticated])
 
   return (
     <motion.div className="homepage d-flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
@@ -15,21 +27,16 @@ const Home = () => {
       <Container className="d-flex flex-column justify-content-center align-items-center text-white">
         {/* <h1 className="p-3">Experience your memories like never before</h1> */}
         <h1 className="magic-text p-3">Create. Collect. Share.</h1>
-        {authenticated
-          ? (
-            <Link to="/vault">
-              <Button variant="outline-light" size="lg" className="btn-homepage m-3">
-                MY VAULT
-              </Button>
-            </Link>
-          )
-          : (
-            <Link to="/login">
-              <Button variant="outline-light" size="lg" className="btn-homepage m-3">
-                BEGIN
-              </Button>
-            </Link>
-          )}
+        <Link to={linkTo}>
+          <Button className="submit-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+            {buttonName}
+          </Button>
+        </Link>
       </Container>
     </motion.div>
   );
