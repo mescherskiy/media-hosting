@@ -65,7 +65,28 @@ public class FileStore {
                 throw new IllegalStateException("Failed to delete files from S3", e);
             }
         }
+    }
 
+    public void deleteFolder(String bucketName, String path) {
+        ObjectListing objectListing = s3.listObjects(new ListObjectsRequest().withBucketName(bucketName).withPrefix(path));
 
+        List<S3ObjectSummary> objectsToDelete = objectListing.getObjectSummaries();
+        while (objectListing.isTruncated()) {
+            objectListing = s3.listNextBatchOfObjects(objectListing);
+            objectsToDelete.addAll(objectListing.getObjectSummaries());
+        }
+
+        if (!CollectionUtils.isEmpty(objectsToDelete)) {
+            List<DeleteObjectsRequest.KeyVersion> keysToDelete = new ArrayList<>();
+            for (S3ObjectSummary objectSummary : objectsToDelete) {
+                keysToDelete.add(new DeleteObjectsRequest.KeyVersion(objectSummary.getKey()));
+            }
+
+            try {
+                s3.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keysToDelete));
+            } catch (AmazonServiceException e) {
+                throw new IllegalStateException("Failed to delete folder from S3", e);
+            }
+        }
     }
 }

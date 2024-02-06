@@ -1,33 +1,34 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { PhotoAlbum } from "react-photo-album";
-import { Pagination } from "react-bootstrap";
 import "react-google-photo/styles.css"
 import { useDispatch, useSelector } from "react-redux";
 import { selectPhotos, selectSelectedPhotos, setIndex, setIsOpen, setSelectedPhotos } from "../slices/photoSlice";
+import Paginator from "./Paginator";
 
 const Gallery = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
+    const location = useLocation()
+
     const photos = useSelector(selectPhotos)
 
     const selectedPhotos = useSelector(selectSelectedPhotos)
 
-    const [activePage, setActivePage] = useState(1)
+    const [activePage, setActivePage] = useState(parseInt(new URLSearchParams(location.search).get("p")) || 1)
     const itemsPerPage = 12
-
-    const handlePageChange = (page) => {
-        setActivePage(page)
-    }
+    const lastPhotoIndex = activePage * itemsPerPage
+    const firstPhotoIndex = lastPhotoIndex - itemsPerPage
+    const currentPhotos = photos.slice(firstPhotoIndex, lastPhotoIndex)
 
     const handlePhotoClick = (data) => {
         dispatch(setIsOpen(true))
         if (data) {
             console.log("handlePhotoClick data: ", data)
             dispatch(setIndex(data.index))
-            navigate(`photo/${data.photo.id}`)
+            navigate(`photo/${data.photo.id}?p=${activePage}`)
         }
     }
 
@@ -39,15 +40,8 @@ const Gallery = () => {
     }, [selectedPhotos, dispatch])
 
     if (!photos.length) {
-        return <div>Loading...</div>
+        return <div className="text-center no-photos-text">No photos here yet...</div>
     }
-
-    const totalPages = Math.ceil(photos.length / itemsPerPage)
-
-    const lastPhotoIndex = activePage * itemsPerPage
-    const firstPhotoIndex = lastPhotoIndex - itemsPerPage
-    const currentPhotos = photos.slice(firstPhotoIndex, lastPhotoIndex)
-
 
     // if (isError) {
     //     return <div>{error.message}</div>;
@@ -82,20 +76,7 @@ const Gallery = () => {
                     </div>
                 )}
             />
-            {totalPages > 1 && (
-                <Pagination>
-                    {[...Array(totalPages)].map((_, index) => (
-                        <Pagination.Item
-                            key={index + 1}
-                            active={index + 1 === activePage}
-                            onClick={() => handlePageChange(index + 1)}
-                        >
-                            {index + 1}
-                        </Pagination.Item>
-                    ))}
-                </Pagination>
-            )}
-
+            <Paginator totalNumberOfPhotos={photos.length} itemsPerPage={itemsPerPage} activePage={activePage} setActivePage={setActivePage} />
         </div>
     );
 }

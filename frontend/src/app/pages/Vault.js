@@ -31,8 +31,6 @@ const Vault = () => {
             }))
 
             if (!isEqual(prevPhotosRef.current, newPhotos)) {
-                console.log(!isEqual(prevPhotosRef.current, newPhotos))
-                console.log("dispatching newPhotos")
                 dispatch(setPhotos(newPhotos))
                 prevPhotosRef.current = newPhotos
             }

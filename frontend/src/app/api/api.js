@@ -31,7 +31,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             }
         } else {
             api.dispatch(logOut());
-            return "404 ERROR!"
+            return response
             // window.location.href = "/error"
         }
     }
@@ -63,6 +63,7 @@ const api = createApi({
                 method: "POST",
                 body: { ...credentials }
             }),
+            invalidatesTags: ["User"]
         }),
         logout: builder.mutation({
             query: () => ({
@@ -71,14 +72,15 @@ const api = createApi({
             }),
             onQueryStarted: (_, { dispatch }) => {
                 dispatch(logOut())
-            }
+            },
+            invalidatesTags: ["User"]
         }),
         getUser: builder.query({
             query: () => ("user"),
             providesTags: ["User"],
         }),
         deleteUser: builder.mutation({
-            query: id => ({
+            query: () => ({
                 url: `user/delete`,
                 method: "POST",
             }),

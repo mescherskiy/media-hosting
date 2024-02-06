@@ -1,20 +1,60 @@
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { setUploadError } from "../slices/uploadSlice";
+import { useDispatch } from "react-redux";
 
 const DropzoneButton = ({ uploadPhoto }) => {
-  const onDrop = async (acceptedFiles) => {
+  // const onDrop = async (acceptedFiles) => {
+  //   try {
+  //     const uploadPromises = acceptedFiles.map(async (file) => {
+  //       const formData = new FormData();
+  //       formData.append("file", file);
+  //       return uploadPhoto({ file: formData });
+  //     });
+  //     await Promise.all(uploadPromises);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const dispatch = useDispatch()
+
+  const onDrop = useCallback(async (acceptedFiles, rejectedFiles) => {
+    //setIsUploading(true)
+    dispatch(setUploadError(null))
+
+    if (rejectedFiles.length > 0) {
+      const err = rejectedFiles[0].errors[0].message.replace(
+        /(\d+) bytes/,
+        (_, size) => {
+          const maxSizeInMb = parseInt(size, 10) / (1024 * 1024)
+          return `${maxSizeInMb} Mb`
+        }
+      )
+      dispatch(setUploadError(err))
+    }
+
     try {
       const uploadPromises = acceptedFiles.map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        return uploadPhoto({ file: formData });
-      });
-      await Promise.all(uploadPromises);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+        const formData = new FormData()
+        formData.append("file", file)
+        const response = await uploadPhoto({ file: formData })
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, multiple: true, accept: { "image/jpeg": [] } });
+        if (response.error) {
+          throw new Error(response.error.message || "Upload failed")
+        }
+
+        return response
+      })
+
+      await Promise.all(uploadPromises)
+    } catch (error) {
+      dispatch(setUploadError(error.message))
+      console.log(error.message)
+    }
+  }, [uploadPhoto])
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, multiple: true, accept: { "image/*": ['.jpeg', '.png', '.gif'] }, maxSize: 1024 * 1024 * 20 });
 
   return (
     <div className="dropzone-button" {...getRootProps()}>

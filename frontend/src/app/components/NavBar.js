@@ -36,7 +36,7 @@ const NavBar = () => {
           <Navbar.Brand href="/" className="text-uppercase">Media vault</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto align-items-center">
+            <Nav className="me-auto align-items-center flex-row justify-content-around">
               {authenticated ? (
                 <>
                   <Nav.Link as={NavLink} eventKey={1} to={"/vault"}>

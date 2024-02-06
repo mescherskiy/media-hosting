@@ -32,7 +32,7 @@ public class UserController {
 //        }
 
         return userService.delete(request)
-                ? ResponseEntity.ok("User deleted successfully")
+                ? ResponseEntity.ok().body("User deleted successfully")
                 : ResponseEntity.status(HttpStatus.FORBIDDEN).body("Failed to delete user");
     }
 }

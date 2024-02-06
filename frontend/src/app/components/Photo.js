@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import GooglePhoto from "react-google-photo";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { selectIndex, selectIsOpen, selectPhotos, setIndex, setIsOpen } from "../slices/photoSlice";
 import { checkUser } from "../layouts/AuthLayout";
 import { useGetUserQuery } from "../api/api";
@@ -16,6 +16,9 @@ const Photo = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    const location = useLocation()
+    const activePage = new URLSearchParams(location.search).get("p") || 1
 
     const { photoId } = useParams()
 
@@ -37,14 +40,14 @@ const Photo = () => {
     const handleChangeIndex = useCallback(
         (newIndex) => {
             dispatch(setIndex(newIndex))
-            navigate(`../photo/${photos[newIndex].id}`);
+            navigate(`../photo/${photos[newIndex].id}?p=${activePage}`);
             checkUser(getUserQuery, dispatch, navigate)
         }, [dispatch, navigate, photos, getUserQuery]
     );
 
     const handleClose = () => {
         dispatch(setIsOpen(false))
-        navigate("/vault")
+        navigate(`/vault?p=${activePage}`)
     }
 
     if (!photos || photos.length === 0) {

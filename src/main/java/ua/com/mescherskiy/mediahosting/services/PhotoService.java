@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.aws.Bucket;
@@ -244,6 +245,11 @@ public class PhotoService {
                 photoRepository.deleteById(id);
             }
         }
+    }
+
+    public void deleteAllUserPhotos(User user) {
+        fileStore.deleteFolder(Bucket.MEDIA_HOSTING.getBucketName(), user.getId().toString());
+        photoRepository.deleteAllByUser_Email(user.getEmail());
     }
 
 

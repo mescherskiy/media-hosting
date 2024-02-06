@@ -76,14 +76,13 @@ const Register = () => {
     if (Object.values(inputErrors).every(value => value === "")) {
       try {
         const res = await registration({ username, email, password }).unwrap()
-        if (res.ok) {
-          setSuccessMsg("User created successfully!")
+        if (res.message) {
+          setSuccessMsg(res.message)
         } else {
-          setErrMsg("Error!" + res.data.message)
+          setErrMsg(res.data?.message)
         }
       } catch (error) {
-        setErrMsg(error.data.message)
-        console.log(error.data.message)
+        setErrMsg(error.data?.message)
       }
     }
   };
@@ -157,7 +156,7 @@ const Register = () => {
               <Form.Control.Feedback type="invalid">{inputErrors.password}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} className="form-group reg-btn-and-err d-flex justify-content-between">
+            <Form.Group as={Col} className="form-group reg-btn-and-err d-flex justify-content-between align-items-center">
               <Button
                 type="submit"
                 className="submit-btn"
