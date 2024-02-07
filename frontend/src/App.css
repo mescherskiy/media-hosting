@@ -4,6 +4,7 @@
   justify-content: space-between; */
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   min-height: 100dvh;
   padding-top: 10vh;
 }
@@ -45,6 +46,10 @@ header {
   position: absolute;
   width: 100%;
   top: 0;
+}
+
+header, nav {
+  height: -webkit-fill-content;
 }
 
 nav {
@@ -486,12 +491,14 @@ footer {
 
 @media screen and (max-width: 767px) {
   .iconDiv {
+    width: auto;
     width: fit-content;
     overflow: visible;
     padding: 0 10px;
   }
 
   .iconDiv:hover {
+    width: auto;
     width: initial !important;
   }
 

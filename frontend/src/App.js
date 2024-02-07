@@ -1,7 +1,7 @@
 import React from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import "./new.css";
 
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import RootLayout from "./app/layouts/RootLayout";
