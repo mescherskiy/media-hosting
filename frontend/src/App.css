@@ -480,8 +480,8 @@ footer {
   width: 36px;
   margin: 0 5px;
   border-radius: 8px;
-  display: -webkit-inline-box;
   display: inline-flex;
+  display: -webkit-inline-box;
   align-items: center;
   white-space: nowrap;
   overflow: hidden;
@@ -532,6 +532,12 @@ footer {
   }
 }
 
+.iconDiv.nav-item:hover {
+  background-color: rgb(81, 73, 117);
+  transition: width 300ms ease-in-out 0s, background-color 100ms linear 200ms;
+  width: 110px;
+}
+
 .iconDiv:nth-child(1):hover,
 .iconDiv:nth-child(1):focus-visible {
   width: 120px;
@@ -557,7 +563,7 @@ footer {
 .iconDiv:hover,
 .iconDiv:focus-visible {
   background-color: rgb(81, 73, 117);
-  transition: width 300ms ease-in-out 0s, background-color 100ms linear 0s;
+  transition: width 300ms ease-in-out 0s, background-color 100ms linear 200ms;
 }
 
 .iconDiv:focus-visible {
