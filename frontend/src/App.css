@@ -488,6 +488,7 @@ footer {
   cursor: pointer;
   transition: width 300ms ease-in-out 0s, background-color 300ms linear 200ms;
   color: white;
+  padding: 0 5px;
 }
 
 @media screen and (max-width: 767px) {
@@ -515,6 +516,7 @@ footer {
 .iconSVG {
   height: 30px;
   width: 30px;
+  top: 2px;
   aspect-ratio: 1 / 1;
   @supports not (aspect-ratio: 1 / 1) {
 
@@ -536,6 +538,11 @@ footer {
   background-color: rgb(81, 73, 117);
   transition: width 300ms ease-in-out 0s, background-color 100ms linear 200ms;
   width: 110px;
+}
+
+.iconDiv::after,
+.iconSVG {
+  position: relative;
 }
 
 .iconDiv:nth-child(1):hover,
@@ -579,6 +586,7 @@ footer {
   content: attr(tooltip);
   margin-left: 12px;
   animation: fadeIn 600ms linear forwards;
+  top: 5px;
 }
 
 .divider {
