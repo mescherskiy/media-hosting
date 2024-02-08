@@ -49,12 +49,12 @@ header {
 }
 
 header, nav {
-  height: -webkit-fill-content;
+  height: -webkit-fit-content;
 }
 
-nav {
+/* nav {
   height: -webkit-fill-available;
-}
+} */
 
 a.navbar-brand {
   font-weight: 900;
@@ -480,6 +480,7 @@ footer {
   width: 36px;
   margin: 0 5px;
   border-radius: 8px;
+  display: -webkit-inline-box;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -513,7 +514,22 @@ footer {
 
 .iconSVG {
   height: 30px;
+  width: 30px;
   aspect-ratio: 1 / 1;
+  @supports not (aspect-ratio: 1 / 1) {
+
+    &::before {
+      float: left;
+      padding-top: 100%;
+      content: "";
+    }
+
+    &::after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+  }
 }
 
 .iconDiv:nth-child(1):hover,
