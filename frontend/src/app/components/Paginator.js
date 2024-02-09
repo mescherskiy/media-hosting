@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Pagination } from 'react-bootstrap'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -8,6 +8,12 @@ const Paginator = ({ totalNumberOfPhotos, itemsPerPage, activePage, setActivePag
     const navigate = useNavigate()
 
     const totalPages = Math.ceil(totalNumberOfPhotos / itemsPerPage)
+
+    useEffect(() => {
+        if (activePage > totalPages) {
+            onPageChange(totalPages)
+        }
+    })
     
     const isCurrentPageFirst = activePage === 1
     const isCurrentPageLast = activePage === totalPages
