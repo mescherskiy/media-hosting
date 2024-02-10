@@ -1,6 +1,8 @@
 package ua.com.mescherskiy.mediahosting.security.services;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +35,8 @@ public class RefreshTokenService {
 
     @Autowired
     private JwtService jwtService;
+
+    private static final Logger logger = LoggerFactory.getLogger(RefreshTokenService.class);
 
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
@@ -69,7 +73,12 @@ public class RefreshTokenService {
     @Transactional
     public void deleteByToken(String token) {
         System.out.println("Deleting RefreshToken with token: " + token);
-        refreshTokenRepository.deleteByToken(token);
+        logger.info("Deleting RefreshToken with token: " + token);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByToken(token);
+        if (refreshToken.isPresent()) {
+            refreshTokenRepository.deleteByToken(token);
+        }
+
     }
 
     public ResponseEntity<MessageResponse> refresh(HttpServletRequest request) {
