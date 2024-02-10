@@ -54,8 +54,8 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             if (refreshToken != null && !refreshToken.isEmpty()) {
                 refreshTokenService.deleteByToken(refreshToken);
             } else {
-                if (!request.getServletPath().endsWith("/vault")) {
-                    response.sendRedirect("/vault");
+                if (!request.getServletPath().endsWith("/")) {
+                    response.sendRedirect("/");
                 }
             }
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
