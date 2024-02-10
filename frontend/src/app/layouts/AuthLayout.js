@@ -29,6 +29,7 @@ const AuthLayout = () => {
         else {
             navigate("/", {replace: true}) 
         }
+        return () => {}
     }, [isAuthenticated, navigate, dispatch])
 
     return (
