@@ -3,6 +3,7 @@ package ua.com.mescherskiy.mediahosting.security.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,7 +58,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        if (
+        if (!request.getServletPath().startsWith("/api")) {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");
+            dispatcher.forward(request, response);
+            return;
+        }
+        else if (
                 !request.getServletPath().endsWith("/signin")
                 && !request.getServletPath().endsWith("/refreshtoken")
                 && !request.getServletPath().endsWith("/signup")
