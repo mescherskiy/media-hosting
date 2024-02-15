@@ -32,4 +32,12 @@ public class UserService {
                     return true;
                 }).orElse(false);
     }
+
+    public boolean isUserExists(String username) {
+        return userRepository.existsByEmail(username);
+    }
+
+    public Optional<User> findUserByUsername(String username) {
+        return userRepository.findByEmail(username);
+    }
 }

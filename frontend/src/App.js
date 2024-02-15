@@ -14,6 +14,7 @@ import Vault from "./app/pages/Vault";
 import Photo from "./app/components/Photo";
 import NotFound from "./app/pages/NotFound";
 import Gallery from "./app/components/Gallery";
+import Share from "./app/pages/Share";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
+      <Route path="share/:key" element={<Share />} />
 
       <Route element={<AuthLayout />}>
         <Route path="profile" element={<Profile />} />

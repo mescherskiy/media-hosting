@@ -147,7 +147,7 @@ const api = createApi({
         }),
         deleteUserPhotos: builder.mutation({
             query: ({ photoIds }) => ({
-                url: `vault/delete`,
+                url: "vault/delete",
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -155,6 +155,22 @@ const api = createApi({
                 body: JSON.stringify(photoIds)
             }),
             invalidatesTags: ["Photo"],
+        }),
+        sharePhotos: builder.mutation({
+            query: ({ photoIds }) => ({
+                url: "share",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(photoIds)
+            })
+        }),
+        getSharedPhotos: builder.query({
+            query: (key) => ({
+                url: `share/${key}`,
+                method: "GET"
+            })
         }),
     })
 })
@@ -168,6 +184,8 @@ export const {
     useDeleteUserPhotosMutation,
     useDeleteUserMutation,
     useGetUserQuery,
+    useSharePhotosMutation,
+    useGetSharedPhotosQuery,
 } = api;
 
 export default api;

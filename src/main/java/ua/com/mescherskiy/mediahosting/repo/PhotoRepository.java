@@ -23,4 +23,5 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     Optional<Photo> findByUser(User user);
     Optional<Photo> findByUser_Id(Long userId);
     Optional<Photo> findByFileNameOrPath(String fileName, String path);
+    List<Photo> findByIdInAndUser(List<Long> ids, User user);
 }

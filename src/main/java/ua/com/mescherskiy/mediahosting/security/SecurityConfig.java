@@ -106,6 +106,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/vault/*/*").permitAll()
+                .requestMatchers("/api/share/**").permitAll()
                 .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/static/**", "/index.html", "/").permitAll()

@@ -759,6 +759,7 @@ footer {
   -webkit-animation: fadeInItem 0.6s both;
   animation: fadeInItem 0.6s both;
   opacity: 0;
+  z-index: 2;
 }
 
 .sidebar-list {

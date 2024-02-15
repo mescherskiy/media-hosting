@@ -46,5 +46,9 @@ jwt:
   refreshTokenCookieName: mh-jwt-refresh
   refreshTokenExpirationMs: 3600000
 #  refreshTokenExpirationMs: 120000
+
+#baseUrl: http://localhost:8080/api/
+baseUrl: https://media-hosting-beedbd9a2f9f.herokuapp.com/api/
+
 server:
   port: ${PORT:8080}

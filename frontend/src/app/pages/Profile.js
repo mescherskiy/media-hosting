@@ -63,7 +63,7 @@ const Profile = () => {
         </Modal.Header>
         <Modal.Body>Are you sure you want to delete your profile?</Modal.Body>
         <Modal.Footer>
-          <Button variant="seondary" onClick={handleCloseModal}>Cancel</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>Cancel</Button>
           <Button variant="danger" onClick={handleDeleteProfile}>Delete</Button>
         </Modal.Footer>
       </Modal>

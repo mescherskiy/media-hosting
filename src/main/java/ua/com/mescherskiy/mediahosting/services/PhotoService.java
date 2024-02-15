@@ -38,6 +38,9 @@ public class PhotoService {
 
     @Value("${aws.s3.cdnLink}")
     private String cdnLink;
+
+    @Value("${baseUrl}")
+    private String baseUrl;
     private final PhotoRepository photoRepository;
     private final UserRepository userRepository;
 
@@ -68,12 +71,10 @@ public class PhotoService {
     public List<PhotoResponse> generateAllUserPhotoUrls(HttpServletRequest request) {
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(username);
-        return photos.stream().map(photo -> new PhotoResponse(
-                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + photo.getId(),
-                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
 //        return photos.stream().map(photo -> new PhotoResponse(
-//                "http://localhost:8080/api/vault/" + photo.getId(),
+//                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + photo.getId(),
 //                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+        return getPhotoResponseList(photos);
 
 //        UserDetailsImpl user = jwtService.extractUserDetailsFromToken(jwtService.getAccessTokenFromCookies(request));
 //        List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(user.getEmail());
@@ -81,6 +82,8 @@ public class PhotoService {
 //                "https://d17a7s0fri80p3.cloudfront.net/" + user.getId() + "/" + photo.getFileName(),
 //                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
     }
+
+
 
 //    public Optional<Photo> getPhotoByFilenameOrPath(String fileName, String path) {
 //        return photoRepository.findByFileNameOrPath(fileName, path);
@@ -252,6 +255,10 @@ public class PhotoService {
         photoRepository.deleteAllByUser_Email(user.getEmail());
     }
 
+    public List<PhotoResponse> getUserPhotosByIds(List<Long> ids, User user) {
+        List<Photo> photos = photoRepository.findByIdInAndUser(ids, user);
+        return getSharedPhotoResponseList(photos, user.getId());
+    }
 
 //    public String generatePresignedPhotoUrl(String username, String imageKey) {
 //        User user = isUserExists(username);
@@ -304,5 +311,17 @@ public class PhotoService {
         if (file.isEmpty()) {
             throw new IllegalStateException("Cannot upload an empty file [ " + file.getSize() + " ]");
         }
+    }
+
+    private List<PhotoResponse> getPhotoResponseList(List<Photo> photos) {
+        return photos.stream().map(photo -> new PhotoResponse(
+                baseUrl + "vault/" + photo.getId(),
+                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+    }
+
+    private List<PhotoResponse> getSharedPhotoResponseList(List<Photo> photos, Long userId) {
+        return photos.stream().map(photo -> new PhotoResponse(
+                String.format("%s/%s/%s", cdnLink, userId, photo.getFileName()),
+                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
     }
 }
