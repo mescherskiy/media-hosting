@@ -59,7 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         if (!request.getServletPath().startsWith("/api")) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("frontend/build/index.html");
             dispatcher.forward(request, response);
             return;
         }
