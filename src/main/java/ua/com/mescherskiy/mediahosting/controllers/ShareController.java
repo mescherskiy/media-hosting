@@ -1,6 +1,7 @@
 package ua.com.mescherskiy.mediahosting.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
 import ua.com.mescherskiy.mediahosting.payload.response.SharedPhotos;
 import ua.com.mescherskiy.mediahosting.security.services.ShareService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,10 +28,20 @@ public class ShareController {
     }
 
     @GetMapping("/share/{key}")
-    public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key) {
+    public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
-        return photos != null
-                ? ResponseEntity.ok().body(new SharedPhotos(photos))
-                : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
+        if (photos != null) {
+            try {
+                response.sendRedirect(request.getRequestURL().toString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.ok().body(new SharedPhotos(photos));
+        } else {
+            return ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
+        }
+//        return photos != null
+//                ? ResponseEntity.ok().body(new SharedPhotos(photos))
+//                : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
     }
 }
