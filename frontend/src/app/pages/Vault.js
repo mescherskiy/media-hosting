@@ -91,7 +91,7 @@ const Vault = () => {
                     isDeleting={isDeleting}
                     handleSharePhotos={() => handleSharePhotos({ selectedPhotos })}
                     isSharing={isSharing} />}
-            <Modal show={generatedKey} onHide={handleCloseModal}>
+            <Modal className="share-modal" show={generatedKey} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>Your generated URL:</Modal.Title>
                 </Modal.Header>

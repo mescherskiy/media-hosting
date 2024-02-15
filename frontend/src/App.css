@@ -894,3 +894,12 @@ footer {
 .profile-container button {
   width: 100%;
 }
+
+.share-modal .modal-content {
+  width: fit-content;
+  max-width: 80vw;
+}
+
+.share-modal .modal-content p {
+  word-wrap: break-word;
+}
