@@ -110,6 +110,8 @@ public class SecurityConfig {
                 .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/static/**", "/index.html", "/").permitAll()
+                .requestMatchers("/public/index.html").permitAll()
+                .requestMatchers("/frontend/public/index.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
 //                .oauth2Login(Customizer.withDefaults())
