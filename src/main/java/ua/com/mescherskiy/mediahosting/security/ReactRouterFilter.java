@@ -20,7 +20,7 @@ public class ReactRouterFilter implements Filter {
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
         if (!path.startsWith("/api")) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/index.html");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/public/index.html");
             dispatcher.forward(request, response);
             return;
         }
