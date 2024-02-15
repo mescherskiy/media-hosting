@@ -69,6 +69,9 @@ public class SecurityConfig {
     };
 
     @Bean
+    public ReactRouterFilter reactRouterFilter() {return new ReactRouterFilter(); }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -122,7 +125,8 @@ public class SecurityConfig {
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(reactRouterFilter(), JwtAuthFilter.class);
 
         return http.build();
     }
