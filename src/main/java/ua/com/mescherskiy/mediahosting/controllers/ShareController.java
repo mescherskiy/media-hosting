@@ -27,7 +27,7 @@ public class ShareController {
                 : ResponseEntity.badRequest().body(new MessageResponse("Error generating shared link"));
     }
 
-    @GetMapping("/share/{key}")
+    @GetMapping("/api/share/{key}")
     public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
         if (photos != null) {
