@@ -31,11 +31,11 @@ public class ShareController {
     public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
         if (photos != null) {
-            try {
-                response.sendRedirect(request.getRequestURL().toString());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                response.sendRedirect(request.getRequestURL().toString());
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
             return ResponseEntity.ok().body(new SharedPhotos(photos));
         } else {
             return ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
