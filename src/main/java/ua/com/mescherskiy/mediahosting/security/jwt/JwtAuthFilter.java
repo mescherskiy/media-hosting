@@ -61,6 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 !request.getServletPath().endsWith("/signin")
                 && !request.getServletPath().endsWith("/refreshtoken")
                 && !request.getServletPath().endsWith("/signup")
+                && !request.getServletPath().startsWith("/share/*")
                 && !request.getServletPath().equals("/")) {
             logger.info(request.getServletPath());
             try {
