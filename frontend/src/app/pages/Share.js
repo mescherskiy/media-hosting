@@ -6,7 +6,7 @@ import { useGetSharedPhotosQuery } from '../api/api'
 const Share = () => {
     const navigate = useNavigate()
     const { key } = useParams()
-    const { data: photos, isLoading, isError, error, isSuccess } = useGetSharedPhotosQuery(key)
+    const { data, isLoading, isError, error, isSuccess } = useGetSharedPhotosQuery(key)
 
     if (isLoading) {
         return null
@@ -17,7 +17,7 @@ const Share = () => {
     }
 
     if (isSuccess) {
-        const srcPhotos = photos.map(photo => {
+        const srcPhotos = data.photos.map(photo => {
             return { ...photo, src: photo.url }
         })
 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.com.mescherskiy.mediahosting.models.Photo;
 import ua.com.mescherskiy.mediahosting.payload.response.MessageResponse;
 import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
+import ua.com.mescherskiy.mediahosting.payload.response.SharedPhotos;
 import ua.com.mescherskiy.mediahosting.security.services.ShareService;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class ShareController {
     public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
         return photos != null
-                ? ResponseEntity.ok().body(photos)
+                ? ResponseEntity.ok().body(new SharedPhotos(photos))
                 : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
     }
 }
