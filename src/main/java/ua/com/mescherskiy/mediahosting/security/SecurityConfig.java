@@ -112,6 +112,8 @@ public class SecurityConfig {
                 .requestMatchers("/static/**", "/index.html", "/").permitAll()
                 .requestMatchers("/public/index.html").permitAll()
                 .requestMatchers("/frontend/public/index.html").permitAll()
+                .requestMatchers("frontend/build/index.html").permitAll()
+                .requestMatchers("/frontend/build/index.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
 //                .oauth2Login(Customizer.withDefaults())
