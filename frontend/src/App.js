@@ -33,7 +33,7 @@ const router = createBrowserRouter(
         </Route>
       </Route>
 
-      <Route path="error" element={<NotFound />} />
+      <Route path="*" element={<NotFound />} />
 
     </Route>
   )
