@@ -16,10 +16,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/share")
 public class ShareController {
     private final ShareService shareService;
 
-    @PostMapping("/api/share")
+    @PostMapping
     public ResponseEntity<?> sharePhotos(@RequestBody List<Long> photoIds, HttpServletRequest request) {
         String key = shareService.generateSharedLink(photoIds, request);
         return key != null
@@ -27,7 +28,7 @@ public class ShareController {
                 : ResponseEntity.badRequest().body(new MessageResponse("Error generating shared link"));
     }
 
-    @GetMapping("/api/share/{key}")
+    @GetMapping("/{key}")
     public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
         if (photos != null) {

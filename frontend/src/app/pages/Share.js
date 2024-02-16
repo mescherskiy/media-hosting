@@ -13,7 +13,7 @@ const Share = () => {
     }
 
     if (isError) {
-        return <div>Oops, an error occured</div>
+        return <div>Oops, an error occured: {error.data.message || error.data || ""}</div>
     }
 
     if (isSuccess) {
