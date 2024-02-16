@@ -13,11 +13,11 @@ const Share = () => {
     }
 
     if (isError) {
-        return <div>Oops, an error occured: {error?.data || error?.message}</div>
+        return <div>Oops, an error occured</div>
     }
 
     if (isSuccess) {
-        const srcPhotos = photos.data.map(photo => {
+        const srcPhotos = photos.map(photo => {
             return { ...photo, src: photo.url }
         })
 

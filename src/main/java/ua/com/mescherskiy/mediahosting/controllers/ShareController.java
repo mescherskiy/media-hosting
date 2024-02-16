@@ -31,7 +31,7 @@ public class ShareController {
     public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
         List<PhotoResponse> photos = shareService.getSharedPhotos(key);
         if (photos != null) {
-            return ResponseEntity.ok().body(photos);
+            return ResponseEntity.ok(photos);
         } else {
             return ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
         }
