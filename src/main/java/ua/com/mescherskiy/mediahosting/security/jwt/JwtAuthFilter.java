@@ -72,7 +72,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 !request.getServletPath().endsWith("/signin")
                 && !request.getServletPath().endsWith("/refreshtoken")
                 && !request.getServletPath().endsWith("/signup")
-                && !request.getServletPath().equals("/")) {
+                && !request.getServletPath().startsWith("/api/share/")
+                && !request.getServletPath().equals("/"))
+        {
             logger.info(request.getServletPath());
             try {
                 String jwt = parseJWT(request);

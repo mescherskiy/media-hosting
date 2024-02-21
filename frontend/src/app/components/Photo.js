@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect } from "react";
 import GooglePhoto from "react-google-photo";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { selectIndex, selectIsOpen, selectPhotos, setIndex, setIsOpen } from "../slices/photoSlice";
 import { checkUser } from "../layouts/AuthLayout";
 import { useGetUserQuery } from "../api/api";
 
 const Photo = () => {
 
-    const photos = useSelector(selectPhotos)
+    const [ photos ] = useOutletContext()
+
+    console.log("photos: ", photos)
+
+    // const photos = useSelector(selectPhotos)
     const index = useSelector(selectIndex)
     const isOpen = useSelector(selectIsOpen)
 
@@ -47,7 +51,7 @@ const Photo = () => {
 
     const handleClose = () => {
         dispatch(setIsOpen(false))
-        navigate(`/vault?p=${activePage}`)
+        navigate("..")
     }
 
     if (!photos || photos.length === 0) {

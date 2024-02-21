@@ -12,4 +12,6 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     Optional<Share> findByUsername(String username);
 
     Optional<Share> findByKey(String key);
+
+    boolean existsByKey(String key);
 }

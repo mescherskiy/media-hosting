@@ -215,6 +215,16 @@ public class PhotoService {
         return null;
     }
 
+    public String getCurrentPhotoUrl(Long photoId, String username) {
+        Optional<User> user = userRepository.findByEmail(username);
+        if (user.isPresent()) {
+            String path = String.format("%s/%s", cdnLink, user.get().getId());
+            String key = photoRepository.findById(photoId).get().getFileName();
+            return path + "/" + key;
+        }
+        return null;
+    }
+
     public byte[] downloadThumbnail(Long photoId, HttpServletRequest request) {
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         User user = isUserExists(username);

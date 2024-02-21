@@ -29,6 +29,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
                 api.dispatch(setNotificationMessage(refreshResponse.error.data.message))
                 api.dispatch(showNotification(true))
             }
+        } else if (error.status === 404) {
+            window.location.href = "/*"
         } else {
             api.dispatch(logOut());
             return response
@@ -48,7 +50,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 const api = createApi({
     baseQuery: baseQueryWithReauth,
-    tagTypes: ["User", "Photo"],
+    tagTypes: ["User", "Photo", "Album"],
     endpoints: builder => ({
         registration: builder.mutation({
             query: credentials => ({
@@ -89,6 +91,9 @@ const api = createApi({
         getUserPhotos: builder.query({
             query: () => `vault`,
             providesTags: ["Photo"],
+        }),
+        getPhotoById: builder.query({
+            query: (photoId) => (`vault/${photoId}`)
         }),
         uploadPhoto: builder.mutation({
             // query: ({ email, file }) => ({
@@ -172,6 +177,25 @@ const api = createApi({
                 method: "GET"
             })
         }),
+        getAllAlbums: builder.query({
+            query: () => "album",
+            providesTags: ["Album"]
+        }),
+        createNewAlbum: builder.mutation({
+            query: (albumRequest) => ({
+                url: "album/new",
+                method: "POST",
+                // headers: {
+                //     "Content-Type": "application/json",
+                // },
+                // body: JSON.stringify({...albumRequest})
+                body: {...albumRequest}
+            }),
+            invalidatesTags: ["Album"]
+        }),
+        getAlbumPhotos: builder.query({
+            query: (id) => (`album/${id}`)
+        })
     })
 })
 
@@ -180,12 +204,16 @@ export const {
     useRegistrationMutation,
     useLogoutMutation,
     useGetUserPhotosQuery,
+    useGetPhotoByIdQuery,
     useUploadPhotoMutation,
     useDeleteUserPhotosMutation,
     useDeleteUserMutation,
     useGetUserQuery,
     useSharePhotosMutation,
     useGetSharedPhotosQuery,
+    useGetAllAlbumsQuery,
+    useCreateNewAlbumMutation,
+    useGetAlbumPhotosQuery,
 } = api;
 
 export default api;

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from "./slices/authSlice";
 import uploadReducer from './slices/uploadSlice';
 import photoReducer from './slices/photoSlice'
+import albumReducer from './slices/albumSlice';
 import api from './api/api';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
@@ -10,6 +11,7 @@ const reducer = {
   auth: authReducer,
   upload: uploadReducer,
   photo: photoReducer,
+  album: albumReducer,
 }
 
 export const store = configureStore({

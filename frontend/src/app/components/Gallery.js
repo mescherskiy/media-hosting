@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom"
 import { PhotoAlbum } from "react-photo-album";
 import "react-google-photo/styles.css"
@@ -37,7 +37,14 @@ const Gallery = () => {
             ? selectedPhotos.filter((photoId) => photoId !== id)
             : [...selectedPhotos, id]
         dispatch(setSelectedPhotos(updatedSelectedPhotos))
+        console.log("selectedPhotos: ", updatedSelectedPhotos)
     }, [selectedPhotos, dispatch])
+
+    useEffect(() => {
+        return () => {
+            dispatch(setSelectedPhotos([]));
+        };
+    }, [dispatch]);
 
     if (!photos.length) {
         return <div className="text-center no-photos-text">No photos here yet...</div>

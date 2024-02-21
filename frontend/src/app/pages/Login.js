@@ -53,6 +53,8 @@ const Login = () => {
       } else {
         setErrMsg("Login failed");
       }
+    } finally {
+      setErrMsg("")
     }
   };
 

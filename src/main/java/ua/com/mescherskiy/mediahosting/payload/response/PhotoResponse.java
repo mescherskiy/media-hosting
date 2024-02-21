@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class PhotoResponse {
-    private String url;
+    private String src;
     private int width;
     private int height;
     private Long id;

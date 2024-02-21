@@ -25,21 +25,10 @@ public class PhotoController {
 
     private final static Logger logger = LoggerFactory.getLogger(PhotoController.class);
 
-//    @GetMapping("/{username}")
-//    public List<String> getAllUserPhotoKeys(@PathVariable("username") String userEmail) {
-//        return photoService.getAllUserPhotoKeysByUsername(userEmail);
-//    }
-
     @GetMapping()
     public List<PhotoResponse> getAllUserPhotoIds(HttpServletRequest request) {
         return photoService.generateAllUserPhotoUrls(request);
     }
-
-//    @GetMapping("/{username}/{imageKey}")
-//    public ResponseEntity<String> getPresignedPhotoUrl(@PathVariable String username, @PathVariable String imageKey) {
-//        String presignedUrl = photoService.generatePresignedPhotoUrl(username, imageKey);
-//        return ResponseEntity.ok(presignedUrl);
-//    }
 
     @PostMapping(
             path = "/upload",
@@ -53,20 +42,6 @@ public class PhotoController {
             throw new RuntimeException("Cannot upload photo", e);
         }
     }
-
-//    @GetMapping("/{photoId}")
-//    public byte[] downloadUserPhotoById(@PathVariable("photoId") Long photoId,
-//                                        @RequestParam("size") String size,
-//                                        HttpServletRequest request) {
-//        if (size.equals("thumbnail")) {
-//            return photoService.downloadThumbnail(photoId, request);
-//        } else if (size.equals("full")) {
-//            return photoService.downloadOriginalPhoto(photoId, request);
-//            return photoService.getCurrentPhotoUrl(photoId, request);
-//        } else {
-//            throw new IllegalArgumentException("Invalid photo size");
-//        }
-//    }
 
     @GetMapping("/{photoId}")
     public ResponseEntity<?> redirectToCurrentPhotoUrl(@PathVariable("photoId") Long photoId, HttpServletRequest request) {

@@ -83,6 +83,9 @@ const Register = () => {
         }
       } catch (error) {
         setErrMsg(error.data?.message)
+      } finally {
+        setErrMsg("")
+        setSuccessMsg("")
       }
     }
   };

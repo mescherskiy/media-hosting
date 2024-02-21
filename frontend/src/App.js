@@ -10,16 +10,20 @@ import Login from "./app/pages/Login";
 import Register from "./app/pages/Register";
 import AuthLayout from "./app/layouts/AuthLayout";
 import Profile from "./app/pages/Profile";
-import Vault from "./app/pages/Vault";
+import Vault, { vaultLoader } from "./app/pages/Vault";
 import Photo from "./app/components/Photo";
 import NotFound from "./app/pages/NotFound";
 import Gallery from "./app/components/Gallery";
 import Share from "./app/pages/Share";
+import Album from "./app/components/Album";
+import Albums, { albumsLoader } from "./app/pages/Albums";
+
+import { store } from "./app/store"
+import api from "./app/api/api";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-
       <Route index element={<Home />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
@@ -27,10 +31,15 @@ const router = createBrowserRouter(
 
       <Route element={<AuthLayout />}>
         <Route path="profile" element={<Profile />} />
-        <Route path="vault" element={<Vault />} >
+        <Route path="vault" element={<Vault />} loader={vaultLoader} >
           <Route index element={<Gallery />} />
           <Route path="photo/:photoId" element={<Photo />} />
         </Route>
+        <Route path="albums" element={<Albums />} loader={albumsLoader} />
+        <Route path="album/:albumId" element={<Album />} >
+          <Route path="photo/:photoId" element={<Photo />} />
+        </Route>
+
       </Route>
 
       <Route path="*" element={<NotFound />} />

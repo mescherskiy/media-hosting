@@ -1,17 +1,16 @@
 import { useDropzone } from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUploadError, selectUploadProgress, setUploadError } from "../slices/uploadSlice";
+import { selectUploadProgress } from "../slices/uploadSlice";
 import { useCallback, useEffect, useState } from "react";
 import { useUploadPhotoMutation } from "../api/api";
+import { setNotificationMessage, showNotification } from "../slices/authSlice";
 
 const Dropzone = () => {
 
     const uploadProgress = useSelector(selectUploadProgress)
-    const uploadError = useSelector(selectUploadError)
     const dispatch = useDispatch()
 
     const [isUploading, setIsUploading] = useState(false);
-    //const [uploadError, setUploadError] = useState(null);
 
     const [uploadPhoto] = useUploadPhotoMutation()
 
@@ -26,10 +25,6 @@ const Dropzone = () => {
     }, [uploadProgress])
 
     const onDrop = useCallback(async (acceptedFiles, rejectedFiles) => {
-        //setIsUploading(true)
-        dispatch(setUploadError(null))
-        console.log("acceptedFiles", acceptedFiles)
-        console.log("rejectedFiles", rejectedFiles)
 
         if (rejectedFiles.length > 0) {
             const err = rejectedFiles[0].errors[0].message.replace(
@@ -39,20 +34,14 @@ const Dropzone = () => {
                     return `${maxSizeInMb} Mb`
                 }
             )
-            dispatch(setUploadError(err))
+            dispatch(setNotificationMessage(err))
+            dispatch(showNotification(true))
         }
 
         try {
             const uploadPromises = acceptedFiles.map(async (file) => {
                 const formData = new FormData()
                 formData.append("file", file)
-                console.log(file)
-                console.log(file.type)
-
-
-                if (!file.type.startsWith("image/")) {
-                    throw new Error("Unsupported file format. Please upload only image files.")
-                }
 
                 const response = await uploadPhoto({ file: formData })
 
@@ -65,13 +54,13 @@ const Dropzone = () => {
 
             await Promise.all(uploadPromises)
         } catch (error) {
-            dispatch(setUploadError(error.message))
+            dispatch(setNotificationMessage(error.message))
+            dispatch(showNotification(true))
             console.log(error.message)
         } finally {
-            console.log(uploadError)
             setIsUploading(false)
         }
-    }, [uploadPhoto])
+    }, [uploadPhoto, dispatch])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop, multiple: true, accept: { "image/*": ['.jpeg', '.png', '.gif'] }, maxSize: 1024 * 1024 * 20, disabled: isUploading
@@ -93,9 +82,6 @@ const Dropzone = () => {
                     <div className="progress progress-bar" style={{ width: `${uploadProgress}%` }}>{uploadProgress.toFixed(2)}%</div>
                 )}
             </div>
-            {uploadError && (
-                <div className="alert alert-danger" role="alert">Error: {uploadError}</div>
-            )}
         </>
     );
 }

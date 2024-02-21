@@ -1,27 +1,13 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { setUploadError } from "../slices/uploadSlice";
 import { useDispatch } from "react-redux";
+import { setNotificationMessage, showNotification } from "../slices/authSlice";
 
 const DropzoneButton = ({ uploadPhoto }) => {
-  // const onDrop = async (acceptedFiles) => {
-  //   try {
-  //     const uploadPromises = acceptedFiles.map(async (file) => {
-  //       const formData = new FormData();
-  //       formData.append("file", file);
-  //       return uploadPhoto({ file: formData });
-  //     });
-  //     await Promise.all(uploadPromises);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   const dispatch = useDispatch()
 
   const onDrop = useCallback(async (acceptedFiles, rejectedFiles) => {
-    //setIsUploading(true)
-    dispatch(setUploadError(null))
 
     if (rejectedFiles.length > 0) {
       const err = rejectedFiles[0].errors[0].message.replace(
@@ -31,7 +17,8 @@ const DropzoneButton = ({ uploadPhoto }) => {
           return `${maxSizeInMb} Mb`
         }
       )
-      dispatch(setUploadError(err))
+      dispatch(setNotificationMessage(err))
+      dispatch(showNotification(true))
     }
 
     try {
@@ -49,10 +36,11 @@ const DropzoneButton = ({ uploadPhoto }) => {
 
       await Promise.all(uploadPromises)
     } catch (error) {
-      dispatch(setUploadError(error.message))
+      dispatch(setNotificationMessage(error.message))
+      dispatch(showNotification(true))
       console.log(error.message)
     }
-  }, [uploadPhoto])
+  }, [uploadPhoto, dispatch])
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop, multiple: true, accept: { "image/*": ['.jpeg', '.png', '.gif'] }, maxSize: 1024 * 1024 * 20 });
 

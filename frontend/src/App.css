@@ -6,7 +6,7 @@
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  padding-top: 10vh;
+  /* padding-top: 10vh; */
 }
 
 .login-form,
@@ -43,12 +43,18 @@ header {
   max-height: 250px;
   background-color: #00000070;
   z-index: 10;
-  position: absolute;
+  position: sticky;
   width: 100%;
   top: 0;
+  transition: background-color .4s ease-in-out;
 }
 
-header, nav {
+header.scrolled {
+  background-color: #000000d1;
+}
+
+header,
+nav {
   height: -webkit-fit-content;
 }
 
@@ -63,6 +69,7 @@ a.navbar-brand {
 main {
   flex-grow: 1;
   min-height: 85vh;
+  padding-inline: 3rem;
 }
 
 footer {
@@ -492,6 +499,10 @@ footer {
   padding: 0 5px;
 }
 
+.iconDiv.delete .iconSVG {
+  width: 28px;
+}
+
 @media screen and (max-width: 767px) {
   .iconDiv {
     width: auto;
@@ -519,6 +530,7 @@ footer {
   width: 30px;
   top: 2px;
   aspect-ratio: 1 / 1;
+
   @supports not (aspect-ratio: 1 / 1) {
 
     &::before {
@@ -902,4 +914,101 @@ footer {
 
 .share-modal .modal-content p {
   word-wrap: break-word;
+}
+
+.create-new-album-input .form-control:focus {
+  box-shadow: none;
+}
+
+.album-li {
+  font-weight: 600;
+}
+
+.album-li span {
+  float: right;
+  font-size: 90%;
+  color: dimgray;
+  font-weight: 300;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.albums {
+  display: grid;
+  width: 100%;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+}
+
+.albums-item {
+  margin-left: 0;
+  margin-right: 0;
+  aspect-ratio: 16/9;
+
+  @supports not (aspect-ratio: 16/9) {
+    &::before {
+      float: left;
+      padding-top: 56.25%;
+      content: "";
+    }
+
+    &::after {
+      display: block;
+      content: "";
+      clear: both;
+    }
+  }
+
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.albums-item img {
+  width: 100%;
+  transition: transform ease-in-out .2s;
+  ;
+}
+
+.albums-item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity ease-in-out .2s;
+  ;
+}
+
+.albums-item:hover::after {
+  opacity: 1;
+}
+
+.album-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.albums-item:hover .album-info {
+  opacity: 1;
+}
+
+.album-container {
+  margin: 2rem auto;
+  padding: 2rem 4rem 2rem 4rem;
+  color: white;
+  background-color: #00000070;
+  border-radius: 8px;
 }

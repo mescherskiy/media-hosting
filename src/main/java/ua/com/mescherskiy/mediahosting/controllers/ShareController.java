@@ -3,6 +3,7 @@ package ua.com.mescherskiy.mediahosting.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.com.mescherskiy.mediahosting.models.Photo;
@@ -29,15 +30,13 @@ public class ShareController {
     }
 
     @GetMapping("/{key}")
-    public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key, HttpServletRequest request, HttpServletResponse response) {
-        List<PhotoResponse> photos = shareService.getSharedPhotos(key);
-        if (photos != null) {
-            return ResponseEntity.ok(photos);
-        } else {
-            return ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
+    public ResponseEntity<?> getSharedPhotosByKey(@PathVariable String key) {
+        if (!shareService.isKeyExists(key)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Page not found"));
         }
-//        return photos != null
-//                ? ResponseEntity.ok().body(new SharedPhotos(photos))
-//                : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
+        List<PhotoResponse> photos = shareService.getSharedPhotos(key);
+        return photos != null
+                ? ResponseEntity.ok(photos)
+                : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));
     }
 }
