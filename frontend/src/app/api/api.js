@@ -18,7 +18,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
     const error = response?.error
     if (error) {
-        console.log("Error in api: ", error)
+        console.log("Error in api: ", response)
         if (error.status === 403) {
             localStorage.setItem("lastVisitedPath", window.location.pathname)
             const refreshResponse = await baseQuery("auth/refreshtoken", api, extraOptions);
@@ -33,7 +33,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             window.location.href = "/*"
         } else {
             api.dispatch(logOut());
-            return response
+            // return response
             // window.location.href = "/error"
         }
     }

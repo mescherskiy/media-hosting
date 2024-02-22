@@ -22,9 +22,7 @@ const Home = () => {
 
   return (
     <motion.div className="homepage d-flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
-      {/* <Notification /> */}
       <Container className="d-flex flex-column justify-content-center align-items-center text-white">
-        {/* <h1 className="p-3">Experience your memories like never before</h1> */}
         <h1 className="magic-text p-3">Create. Collect. Share.</h1>
         <Link to={button.link}>
           <Button size="lg" className="submit-btn">

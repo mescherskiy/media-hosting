@@ -27,7 +27,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setErrMsg("")
     try {
       await login({ email, password }).unwrap();
       dispatch(logIn());
@@ -53,8 +53,6 @@ const Login = () => {
       } else {
         setErrMsg("Login failed");
       }
-    } finally {
-      setErrMsg("")
     }
   };
 

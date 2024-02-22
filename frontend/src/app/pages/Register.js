@@ -19,7 +19,7 @@ const Register = () => {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [registration, registrationResult] = useRegistrationMutation();
-  
+
   const checkUsername = () => {
     const cleanUsername = username.trim()
 
@@ -72,20 +72,22 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault()
-
+    setErrMsg("")
+    setSuccessMsg("")
     if (Object.values(inputErrors).every(value => value === "")) {
       try {
         const res = await registration({ username, email, password }).unwrap()
-        if (res.message) {
+        if (!res.error) {
+          console.log("res in if: ", res)
           setSuccessMsg(res.message)
         } else {
-          setErrMsg(res.data?.message)
+          console.log("res in else: ", res)
+          setErrMsg(res.error.data.message)
         }
       } catch (error) {
-        setErrMsg(error.data?.message)
-      } finally {
-        setErrMsg("")
-        setSuccessMsg("")
+        console.log("error: ", error)
+        console.log("error.data.message: ", error.data.message)
+        setErrMsg(error.data.message)
       }
     }
   };

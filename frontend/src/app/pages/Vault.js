@@ -1,55 +1,54 @@
 import Dropzone from "../components/Dropzone";
-import api, { useDeleteUserPhotosMutation, useGetUserPhotosQuery, useSharePhotosMutation } from "../api/api";
+import { useDeleteUserPhotosMutation, useGetUserPhotosQuery, useSharePhotosMutation } from "../api/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { selectPhotos, selectSelectedPhotos, setPhotos, setSelectedPhotos } from "../slices/photoSlice";
-import { Outlet, useLoaderData } from "react-router-dom";
+import { Outlet} from "react-router-dom";
 import { Button, Container, Modal } from "react-bootstrap"
 import { isEqual } from "lodash"
-import { store } from "../store";
 
 const Vault = () => {
-    // const { data, isSuccess } = useGetUserPhotosQuery();
+    const { data, isSuccess } = useGetUserPhotosQuery();
     const [deletePhotos, { isLoading: isDeleting }] = useDeleteUserPhotosMutation();
     const [sharePhotos, { isLoading: isSharing }] = useSharePhotosMutation();
     const selectedPhotos = useSelector(selectSelectedPhotos)
 
-    const photos = useLoaderData().map((photo) => ({
-        ...photo,
-        isSelected: selectedPhotos.includes(photo.id)
-    }))
-    // photos = photos.map((photo) => ({
+    // const photos = useLoaderData().map((photo) => ({
     //     ...photo,
     //     isSelected: selectedPhotos.includes(photo.id)
     // }))
 
 
+
     const dispatch = useDispatch()
 
-    
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [generatedKey, setGeneratedKey] = useState(null)
     const [copied, setCopied] = useState(false)
-    const currentPhotos = useSelector(selectPhotos)
+    const photos = useSelector(selectPhotos)
 
-    const prevPhotosRef = useRef(currentPhotos)
+    const prevPhotosRef = useRef(photos)
 
     const refreshSelectedPhotos = () => {
         dispatch(setSelectedPhotos([]))
     }
 
     useEffect(() => {
-            // photos = photos.map((photo) => ({
-            //     ...photo,
-            //     isSelected: selectedPhotos.includes(photo.id)
-            // }))
+        if (isSuccess && data) {
+            const newPhotos = data?.map((photo) => ({
+                ...photo,
+                isSelected: selectedPhotos.includes(photo.id)
+            }))
 
-            if (!isEqual(prevPhotosRef.current, photos)) {
-                dispatch(setPhotos(photos))
-                prevPhotosRef.current = photos
-            }  
-    }, [dispatch, photos, selectedPhotos])
+            if (!isEqual(prevPhotosRef.current, newPhotos)) {
+                dispatch(setPhotos(newPhotos))
+                prevPhotosRef.current = newPhotos
+            }
+        }
+
+    }, [dispatch, data, selectedPhotos, isSuccess])
 
     useEffect(() => {
         if (selectedPhotos.length > 0) {
@@ -78,7 +77,7 @@ const Vault = () => {
                 console.log("Error: ", error.message)
             }
 
-        }, [sharePhotos]
+        }, [sharePhotos, dispatch]
     )
 
     const handleCloseModal = () => setGeneratedKey(null)
@@ -92,7 +91,13 @@ const Vault = () => {
             .catch(error => console.error("Failed to copy: ", error))
     }
 
-    // if (isSuccess) {
+    if (isSuccess) {
+
+    //     const photos = data.map((photo) => ({
+    //         ...photo,
+    //         isSelected: selectedPhotos.includes(photo.id)
+    //     }))
+
         return (
             <Container>
                 <Dropzone />
@@ -124,21 +129,19 @@ const Vault = () => {
                 <Outlet context={[photos]} />
             </Container>
         )
-    // }
-
-
+    }
 }
 
 export default Vault
 
-export const vaultLoader = async () => {
-    const response = store.dispatch(api.endpoints.getUserPhotos.initiate())
-    try {
-        const result = await response.unwrap()
-        return result
-    } catch (e) {
-        console.log("Error in vaultLoader: ", e)
-    } finally {
-        response.unsubscribe()
-    }
-}
+// export const vaultLoader = async () => {
+//     const response = store.dispatch(api.endpoints.getUserPhotos.initiate())
+//     try {
+//         const result = await response.unwrap()
+//         return result
+//     } catch (e) {
+//         console.log("Error in vaultLoader: ", e)
+//     } finally {
+//         response.unsubscribe()
+//     }
+// }
