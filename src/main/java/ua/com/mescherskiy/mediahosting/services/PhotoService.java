@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ua.com.mescherskiy.mediahosting.aws.Bucket;
 import ua.com.mescherskiy.mediahosting.aws.FileStore;
+import ua.com.mescherskiy.mediahosting.models.Album;
 import ua.com.mescherskiy.mediahosting.models.Photo;
 import ua.com.mescherskiy.mediahosting.models.User;
 import ua.com.mescherskiy.mediahosting.payload.response.PhotoResponse;
@@ -68,13 +69,13 @@ public class PhotoService {
 //        return photos.stream().map(Photo::getId).collect(Collectors.toList());
 //    }
 
-    public List<PhotoResponse> generateAllUserPhotoUrls(HttpServletRequest request) {
+    public Set<PhotoResponse> generateAllUserPhotoUrls(HttpServletRequest request) {
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
-        List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(username);
+        Set<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(username);
 //        return photos.stream().map(photo -> new PhotoResponse(
 //                "https://media-hosting-beedbd9a2f9f.herokuapp.com/api/vault/" + photo.getId(),
 //                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
-        return getPhotoResponseList(photos);
+        return getPhotoResponseSet(photos);
 
 //        UserDetailsImpl user = jwtService.extractUserDetailsFromToken(jwtService.getAccessTokenFromCookies(request));
 //        List<Photo> photos = photoRepository.findAllByUser_EmailOrderByUploadDateDesc(user.getEmail());
@@ -265,9 +266,9 @@ public class PhotoService {
         photoRepository.deleteAllByUser_Email(user.getEmail());
     }
 
-    public List<PhotoResponse> getUserPhotosByIds(List<Long> ids, User user) {
-        List<Photo> photos = photoRepository.findByIdInAndUser(ids, user);
-        return getSharedPhotoResponseList(photos, user.getId());
+    public Set<PhotoResponse> getUserPhotosByIds(Set<Long> ids, User user) {
+        Set<Photo> photos = photoRepository.findByIdInAndUser(ids, user);
+        return getSharedPhotoResponseSet(photos, user.getId());
     }
 
 //    public String generatePresignedPhotoUrl(String username, String imageKey) {
@@ -323,15 +324,15 @@ public class PhotoService {
         }
     }
 
-    private List<PhotoResponse> getPhotoResponseList(List<Photo> photos) {
+    private Set<PhotoResponse> getPhotoResponseSet(Set<Photo> photos) {
         return photos.stream().map(photo -> new PhotoResponse(
                 baseUrl + "vault/" + photo.getId(),
-                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+                photo.getWidth(), photo.getHeight(), photo.getId())).collect(Collectors.toSet());
     }
 
-    private List<PhotoResponse> getSharedPhotoResponseList(List<Photo> photos, Long userId) {
+    private Set<PhotoResponse> getSharedPhotoResponseSet(Set<Photo> photos, Long userId) {
         return photos.stream().map(photo -> new PhotoResponse(
                 String.format("%s/%s/%s", cdnLink, userId, photo.getFileName()),
-                photo.getWidth(), photo.getHeight(), photo.getId())).toList();
+                photo.getWidth(), photo.getHeight(), photo.getId())).collect(Collectors.toSet());
     }
 }

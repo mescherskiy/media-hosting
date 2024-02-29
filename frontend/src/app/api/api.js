@@ -31,7 +31,11 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             }
         } else if (error.status === 404) {
             window.location.href = "/*"
+        } else if (error.status === 418) {
+            return response
         } else {
+            api.dispatch(setNotificationMessage(error?.data?.message || error?.data || ""))
+            api.dispatch(showNotification(true))
             api.dispatch(logOut());
             // return response
             // window.location.href = "/error"
@@ -87,6 +91,14 @@ const api = createApi({
                 method: "POST",
             }),
             invalidatesTags: ["User"],
+        }),
+        editUser: builder.mutation({
+            query: credentials => ({
+                url: "user/edit",
+                method: "PUT",
+                body: { ...credentials }
+            }),
+            invalidatesTags: ["User"]
         }),
         getUserPhotos: builder.query({
             query: () => `vault`,
@@ -159,7 +171,7 @@ const api = createApi({
                 },
                 body: JSON.stringify(photoIds)
             }),
-            invalidatesTags: ["Photo"],
+            invalidatesTags: ["Photo", "Album"],
         }),
         sharePhotos: builder.mutation({
             query: ({ photoIds }) => ({
@@ -185,16 +197,31 @@ const api = createApi({
             query: (albumRequest) => ({
                 url: "album/new",
                 method: "POST",
-                // headers: {
-                //     "Content-Type": "application/json",
-                // },
-                // body: JSON.stringify({...albumRequest})
-                body: {...albumRequest}
+                body: { ...albumRequest }
+            }),
+            invalidatesTags: ["Album"]
+        }),
+        addPhotosToAlbum: builder.mutation({
+            query: ({ albumId, photoIds }) => ({
+                url: "album/add",
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ albumId, photoIds })
             }),
             invalidatesTags: ["Album"]
         }),
         getAlbumPhotos: builder.query({
-            query: (id) => (`album/${id}`)
+            query: (id) => (`album/${id}`),
+            providesTags: ["Album"]
+        }),
+        deleteAlbum: builder.mutation({
+            query: (albumId) => ({
+                url: `album/${albumId}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ["Album"]
         })
     })
 })
@@ -214,6 +241,9 @@ export const {
     useGetAllAlbumsQuery,
     useCreateNewAlbumMutation,
     useGetAlbumPhotosQuery,
+    useDeleteAlbumMutation,
+    useAddPhotosToAlbumMutation,
+    useEditUserMutation,
 } = api;
 
 export default api;

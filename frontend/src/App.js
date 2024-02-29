@@ -16,7 +16,7 @@ import NotFound from "./app/pages/NotFound";
 import Gallery from "./app/components/Gallery";
 import Share from "./app/pages/Share";
 import Album from "./app/components/Album";
-import Albums, { albumsLoader } from "./app/pages/Albums";
+import Albums from "./app/pages/Albums";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,7 +32,7 @@ const router = createBrowserRouter(
           <Route index element={<Gallery />} />
           <Route path="photo/:photoId" element={<Photo />} />
         </Route>
-        <Route path="albums" element={<Albums />} loader={albumsLoader} />
+        <Route path="albums" element={<Albums />} />
         <Route path="album/:albumId" element={<Album />} >
           <Route path="photo/:photoId" element={<Photo />} />
         </Route>

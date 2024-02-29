@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,8 +83,8 @@ public class AuthenticationService {
         Optional<RefreshToken> oldToken = refreshTokenService.findByUserId(userDetails.getId());
         oldToken.ifPresent(token -> refreshTokenService.deleteByToken(token.getToken()));
         ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(refreshTokenService.createRefreshToken(userDetails.getId()).getToken());
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).toList();
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
 
         return new JwtCookieResponse(jwtCookie.toString(), refreshTokenCookie.toString(),
                 new UserInfo(userDetails.getId(), userDetails.getEmail(), userDetails.getName(), roles));

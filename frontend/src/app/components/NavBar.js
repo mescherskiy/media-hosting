@@ -1,23 +1,48 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useDeleteUserPhotosMutation, useLogoutMutation, useUploadPhotoMutation } from "../api/api";
-import { selectAuth } from "../slices/authSlice";
+import { useCreateNewAlbumMutation, useDeleteUserPhotosMutation, useLogoutMutation, useUploadPhotoMutation } from "../api/api";
+import { selectAuth, setGreenNotification, setNotificationMessage, showNotification } from "../slices/authSlice";
 import DropzoneButton from "./DropzoneButton";
-import { Nav, Navbar } from "react-bootstrap";
+import { Button, FormControl, InputGroup, Modal, Nav, Navbar } from "react-bootstrap";
 
 const NavBar = () => {
 
   const [logoutMutation, logoutMutationResult] = useLogoutMutation()
-  const [deletePhotos] = useDeleteUserPhotosMutation();
+  const [deletePhotos] = useDeleteUserPhotosMutation()
+  const [createAlbum] = useCreateNewAlbumMutation()
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const authenticated = useSelector(selectAuth)
   const [uploadPhoto] = useUploadPhotoMutation()
 
   const location = useLocation()
   const [photoId, setPhotoId] = useState(null)
+  const [showAlbumModal, setShowAlbumModal] = useState(false)
+  const [newAlbumName, setNewAlbumName] = useState("")
+
+  const handleCloseModal = () => {
+    setShowAlbumModal(false)
+    setNewAlbumName("")
+  }
+
+  const handleCreateAlbum = async (albumName, photos) => {
+    try {
+      const res = await createAlbum({ name: albumName, photoIds: photos })
+      if (!res.error) {
+        dispatch(setNotificationMessage(res.message || res.data?.message))
+        dispatch(setGreenNotification(true))
+        dispatch(showNotification(true))
+      }
+    } catch (error) {
+      dispatch(setNotificationMessage(error || error.data.message))
+      dispatch(showNotification(true))
+    } finally {
+      handleCloseModal()
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -56,6 +81,8 @@ const NavBar = () => {
       }
     }, [deletePhotos])
 
+  
+
   return (
     <>
       <Navbar collapseOnSelect={true} expand="md" className="navbar navbar-dark justify-content-between">
@@ -87,11 +114,21 @@ const NavBar = () => {
                   </div>
                 </Nav.Link>
 
-                <Nav.Link eventKey={3}>
+                <Nav.Link eventKey={3} onClick={() => setShowAlbumModal(true)}>
+                  <div className="iconDiv nav-item add-album" tooltip="Add album" tabIndex="0">
+                    <div className="iconSVG">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                      </svg>
+                    </div>
+                  </div>
+                </Nav.Link>
+
+                <Nav.Link eventKey={4}>
                   <DropzoneButton className="iconDiv nav-item" uploadPhoto={uploadPhoto} />
                 </Nav.Link>
                 {photoId && (
-                  <Nav.Link eventKey={4} onClick={() => handleDeletePhoto({ photoId })}>
+                  <Nav.Link eventKey={5} onClick={() => handleDeletePhoto({ photoId })}>
                     <div className="iconDiv nav-item delete" tooltip="Delete" tabIndex="0">
                       <div className="iconSVG">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="white" className="w-6 h-6">
@@ -102,7 +139,7 @@ const NavBar = () => {
                   </Nav.Link>
                 )}
                 <div className="divider"></div>
-                <Nav.Link as={NavLink} to={"/profile"} eventKey={5}>
+                <Nav.Link as={NavLink} to={"/profile"} eventKey={6}>
                   <div className="iconDiv nav-item" tooltip="Profile" tabIndex="0">
                     <div className="iconSVG">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="1">
@@ -111,7 +148,7 @@ const NavBar = () => {
                     </div>
                   </div>
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="/" onClick={handleLogout} eventKey={6}>
+                <Nav.Link as={NavLink} to="/" onClick={handleLogout} eventKey={7}>
                   <div className="iconDiv nav-item" tooltip="Log out" tabIndex="0">
                     <div className="iconSVG">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="white" className="w-6 h-6">
@@ -147,6 +184,21 @@ const NavBar = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar >
+      <Modal className="add-to-album-modal" show={showAlbumModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create new album</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <InputGroup className="create-new-album-input p-0">
+            <FormControl
+              placeholder=" + New album"
+              value={newAlbumName}
+              onChange={e => setNewAlbumName(e.target.value)}
+            />
+            <Button disabled={!newAlbumName} onClick={() => handleCreateAlbum(newAlbumName, null)} variant="primary">Create</Button>
+          </InputGroup>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }

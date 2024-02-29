@@ -14,6 +14,7 @@ import ua.com.mescherskiy.mediahosting.security.services.ShareService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ShareController {
     private final ShareService shareService;
 
     @PostMapping
-    public ResponseEntity<?> sharePhotos(@RequestBody List<Long> photoIds, HttpServletRequest request) {
+    public ResponseEntity<?> sharePhotos(@RequestBody Set<Long> photoIds, HttpServletRequest request) {
         String key = shareService.generateSharedLink(photoIds, request);
         return key != null
                 ? ResponseEntity.ok().body(new MessageResponse(key))
@@ -34,7 +35,7 @@ public class ShareController {
         if (!shareService.isKeyExists(key)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Page not found"));
         }
-        List<PhotoResponse> photos = shareService.getSharedPhotos(key);
+        Set<PhotoResponse> photos = shareService.getSharedPhotos(key);
         return photos != null
                 ? ResponseEntity.ok(photos)
                 : ResponseEntity.badRequest().body(new MessageResponse("Something went wrong"));

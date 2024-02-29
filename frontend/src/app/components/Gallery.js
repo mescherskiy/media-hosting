@@ -65,6 +65,7 @@ const Gallery = () => {
                 photos={currentPhotos}
                 onClick={handlePhotoClick}
                 spacing={8}
+                targetRowHeight={400}
                 renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
                     <div className="photo-item" style={{ position: "relative", ...wrapperStyle }}>
                         {renderDefaultPhoto({ wrapped: true })}

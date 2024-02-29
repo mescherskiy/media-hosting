@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
     List<Album> findAllByUsername(String username);
+
+    List<Album> findAllByPhotoIdsContains(Long photoId);
 }

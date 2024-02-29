@@ -3,6 +3,7 @@ package ua.com.mescherskiy.mediahosting.security.services;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ua.com.mescherskiy.mediahosting.models.Photo;
@@ -19,6 +20,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,15 +34,17 @@ public class ShareService {
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
-    public String generateSharedLink(List<Long> photoIds, HttpServletRequest request) {
+    public String generateSharedLink(Set<Long> photoIds, HttpServletRequest request) {
         String key = null;
         String username = jwtService.getUsernameFromJWT(jwtService.getAccessTokenFromCookies(request));
         if (userService.isUserExists(username) && !photoIds.isEmpty()) {
             key = generateRandomKey();
+            LocalDateTime expiration = LocalDateTime.now().plusDays(3);
             Share share = Share.builder()
                     .username(username)
                     .photoIds(photoIds)
                     .key(key)
+                    .expiration(expiration)
                     .build();
             shareRepository.save(share);
         }
@@ -51,16 +55,22 @@ public class ShareService {
         return shareRepository.existsByKey(key);
     }
 
-    public List<PhotoResponse> getSharedPhotos(String key) {
+    public Set<PhotoResponse> getSharedPhotos(String key) {
         Optional<Share> share = shareRepository.findByKey(key);
         if (share.isPresent()) {
-            List<Long> photoIds = share.get().getPhotoIds();
+            Set<Long> photoIds = share.get().getPhotoIds();
             User user = userService.findUserByUsername(share.get().getUsername()).orElse(null);
             if (user != null) {
                 return photoService.getUserPhotosByIds(photoIds, user);
             }
         }
         return null;
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    public void findAndDeleteExpiredShares() {
+        List<Share> expiredShares = shareRepository.findAllByExpirationBefore(LocalDateTime.now());
+        shareRepository.deleteAll(expiredShares);
     }
 
     private String generateRandomKey() {

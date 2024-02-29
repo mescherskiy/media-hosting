@@ -1,39 +1,54 @@
 import React, { useEffect } from 'react'
-import api from '../api/api'
+import api, { useGetAllAlbumsQuery } from '../api/api'
 import { store } from '../store'
-import { Link, useLoaderData } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { setAlbums } from '../slices/albumSlice'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAlbums, setAlbums } from '../slices/albumSlice'
+import { setNotificationMessage, showNotification } from '../slices/authSlice'
 
 const Albums = () => {
-    const albums = useLoaderData()
-    const filteredAlbums = albums.filter(album => album.photos.length > 0)
+    const { data, isSuccess, isLoading, isError, error } = useGetAllAlbumsQuery()
     const dispatch = useDispatch()
+    const albums = useSelector(selectAlbums)
+
 
     useEffect(() => {
-        if (filteredAlbums.length > 0) {
-            dispatch(setAlbums(filteredAlbums))
+        if (isSuccess && data.length > 0) {
+            dispatch(setAlbums(data))
+        } else if (isError) {
+            dispatch(setNotificationMessage(error || error.data?.message))
+            dispatch(showNotification(true))
         }
-    }, [dispatch, filteredAlbums])
+    }, [dispatch, data, isSuccess, isError, error])
+
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
+    if (isSuccess) {
+        return (
+            <>
+                <div className="albums">
+                    {albums?.length > 0 ?
+                        (albums.map((album) => {
+                            const titlePhoto = album.photos.find(photo => photo.width >= photo.height) || album.photos[0]
+                        return (
+                            <Link to={`/album/${album.id}`} className={`albums-item${album.photos.length > 0 ? "" : " empty"}`} key={album.id} >
+                                {album.photos.length > 0 &&
+                                    (<img src={titlePhoto.src} alt={album.name} />)}
+                                <div className="album-info">
+                                    <h3>{album.name}</h3>
+                                    <p>{album.photos.length} elements</p>
+                                </div>
+                            </Link>
+                        )})
+                        ) : (<h4 className="m-5 text-center text-white">You have no albums yet</h4>)}
+                </div>
+            </>
+        )
+    }
 
 
-    return (
-        <>
-            <div className="albums">
-                {filteredAlbums?.length > 0 ?
-                    (filteredAlbums.map((album) => (
-                        <Link to={`/album/${album.id}`} className="albums-item" key={album.id} >
-                            <img src={album.titlePhotoSrc} alt={album.name} />
-                            <div className="album-info">
-                                <h3>{album.name}</h3>
-                                <p>{album.photos.length} elements</p>
-                            </div>
-                        </Link>
-                    ))
-                    ) : (<h4 className="m-5 text-center text-white">You have no albums yet</h4>)}
-            </div>
-        </>
-    )
 }
 
 export default Albums

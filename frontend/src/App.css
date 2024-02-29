@@ -70,6 +70,10 @@ main {
   flex-grow: 1;
   min-height: 85vh;
   padding-inline: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 footer {
@@ -186,7 +190,7 @@ footer {
   color: rgb(209, 209, 209);
 }
 
-.form-card label {
+.form-group label {
   position: absolute;
   top: 0;
   left: 0;
@@ -197,12 +201,26 @@ footer {
   transition: .5s;
 }
 
+.profile-card .form-group label {
+  color: #5ac4f9;
+}
+
 .form-group input:focus~label,
-.form-group input:valid~label {
+.form-group input:valid~label,
+.form-group.not-required.filled label,
+.form-group.not-required.unfilled input:focus~label {
   top: -25px;
   left: 0;
   font-size: 12px;
   color: #5ac4f9;
+}
+
+.form-group.not-required.unfilled label {
+  top: 0;
+  left: 0;
+  font-size: 16px;
+  transition: .5s;
+  padding: 10px 0;
 }
 
 .form-group input.is-invalid {
@@ -580,6 +598,10 @@ footer {
   width: 100px;
 }
 
+.iconDiv.nav-item.add-album:hover {
+  width: 135px;
+}
+
 .iconDiv:hover,
 .iconDiv:focus-visible {
   background-color: rgb(81, 73, 117);
@@ -746,7 +768,12 @@ footer {
   align-items: center;
   text-align: center;
   opacity: 0;
-  transition: opacity 0.5s ease, top 0.5s cubic-bezier(0.68, -0.55, 0.25, 1.35);
+  transition: all 0.5s ease, top 0.5s cubic-bezier(0.68, -0.55, 0.25, 1.35);
+}
+
+.notification.green {
+  background-color: rgb(0, 176, 0);
+  color: white;
 }
 
 .notification.visible {
@@ -767,6 +794,7 @@ footer {
   /* transition: width 0.3s ease-in-out; */
   position: fixed;
   right: 0;
+  top: 40%;
   /* transition: width 0.3s ease; */
   -webkit-animation: fadeInItem 0.6s both;
   animation: fadeInItem 0.6s both;
@@ -879,13 +907,62 @@ footer {
 }
 
 .profile-container {
-  position: relative;
-  width: fit-content;
+  width: 350px;
+  height: 500px;
   margin: 8rem auto;
-  padding: 4rem 4rem 2rem 4rem;
+  perspective: 800px;
+}
+
+.profile-container.flipped .profile-card{
+  transform: rotateY(180deg);
+}
+
+.profile-container.unflipped .profile-card{
+  transform: rotateY(0deg);
+}
+
+.profile-card {
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: all 500ms;
+  transform-style: preserve-3d;
   color: white;
   background-color: #00000070;
-  border-radius: 8px;
+  box-shadow: 0 0 5px 2px rgb(50, 50, 50, .25);
+}
+
+.profile-card .front,
+.profile-card .back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile-card .back {
+  transform: rotateY(180deg);
+}
+
+.profile-card .back svg {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  transition: all 500ms;
+  color: #5ac4f9;
+  box-shadow: 0 0 5px 2px #5ac4f9;
+  border-radius: 50%;
+  width: 35px;
+  cursor: pointer;
+}
+
+.profile-card .back svg:hover {
+  transform: rotate(360deg);
 }
 
 .profile-img {
@@ -893,10 +970,8 @@ footer {
   height: 100px;
   background-color: #ffffff70;
   border-radius: 50%;
-  position: absolute;
   overflow: hidden;
-  left: calc(50% - 50px);
-  top: -55px;
+  margin: 0 auto;
 }
 
 .profile-img img {
@@ -940,11 +1015,14 @@ body::-webkit-scrollbar {
   width: 100%;
   padding: 0;
   grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+  justify-items: stretch;
+  margin-top: 3rem;
 }
 
 .albums-item {
   margin-left: 0;
   margin-right: 0;
+  max-height: 500px;
   aspect-ratio: 16/9;
 
   @supports not (aspect-ratio: 16/9) {
@@ -964,6 +1042,22 @@ body::-webkit-scrollbar {
   overflow: hidden;
   position: relative;
   cursor: pointer;
+}
+
+.albums-item.empty {
+  background-color: #bebebe;
+}
+
+.albums-item.empty::before {
+  content: "No image available";
+  color: black;
+  text-decoration: none;
+  position: relative;
+  top: 45%;
+  left: 40%;
+  display: inline-block;
+  transform: rotate(335deg);
+  font-size: larger;
 }
 
 .albums-item img {
@@ -1011,4 +1105,39 @@ body::-webkit-scrollbar {
   color: white;
   background-color: #00000070;
   border-radius: 8px;
+  position: relative;
+}
+
+.album-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3rem;
+  height: 3rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  margin: 2rem 4rem;
+  border-radius: 50%;
+  overflow: clip;
+  background-image: linear-gradient(to top, #b30000 0%, #f00 80%, #f70000 100%);
+  box-shadow: 0 1px 3px 1px #fa0000, 0 1px 8px #da0202, 0 -1px 1px #d00404, 0 -1px 4px #f70000, inset 0 0 2px 0 #ff0000;
+}
+
+.album-container:hover .album-overlay {
+  opacity: 1;
+}
+
+.album-overlay svg {
+  width: inherit;
+  padding: .5rem;
+}
+
+.album-spinner {
+  width: 2rem;
+  height: 2rem;
+  margin: .5rem;
+}
+
+.album-overlay:hover {
+  box-shadow: 0 1px 3px 1px #fa0000, 0 1px 8px #da0202, 0 -1px 1px #d00404, 0 -1px 4px #f70000, inset 0 0 2px 3px #eb0101;
 }

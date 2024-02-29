@@ -8,14 +8,15 @@ import ua.com.mescherskiy.mediahosting.models.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
-    List<Photo> findAllByUser(User user);
-    List<Photo> findAllByUserId(Long userId);
-    List<Photo> findAllByUser_Email(String email);
+    Set<Photo> findAllByUser(User user);
+    Set<Photo> findAllByUserId(Long userId);
+    Set<Photo> findAllByUser_Email(String email);
 
-    List<Photo> findAllByUser_EmailOrderByUploadDateDesc(String email);
+    Set<Photo> findAllByUser_EmailOrderByUploadDateDesc(String email);
     void deleteById (Long id);
 
     @Modifying
@@ -23,5 +24,5 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     Optional<Photo> findByUser(User user);
     Optional<Photo> findByUser_Id(Long userId);
     Optional<Photo> findByFileNameOrPath(String fileName, String path);
-    List<Photo> findByIdInAndUser(List<Long> ids, User user);
+    Set<Photo> findByIdInAndUser(Set<Long> ids, User user);
 }

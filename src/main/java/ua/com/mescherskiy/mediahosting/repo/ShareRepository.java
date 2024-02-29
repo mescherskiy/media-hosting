@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import ua.com.mescherskiy.mediahosting.models.Share;
 import ua.com.mescherskiy.mediahosting.models.User;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +16,6 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     Optional<Share> findByKey(String key);
 
     boolean existsByKey(String key);
+
+    List<Share> findAllByExpirationBefore(LocalDateTime time);
 }
