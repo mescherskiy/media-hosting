@@ -948,7 +948,7 @@ footer {
   transform: rotateY(180deg);
 }
 
-.profile-card .back svg {
+.profile-card .back > svg {
   position: absolute;
   top: 1rem;
   right: 1.5rem;
@@ -962,6 +962,27 @@ footer {
 
 .profile-card .back svg:hover {
   transform: rotate(360deg);
+}
+
+.profile-card .form .form-group:nth-child(2),
+.profile-card .form .form-group:nth-child(3),
+.profile-card .form .form-group:nth-child(4) {
+  width: 90%;
+}
+
+.profile-card .show-password-btn {
+  background-color: inherit;
+  width: 24px;
+  border: none;
+  position: absolute;
+  right: -30px;
+  top: 8px;
+  cursor: pointer;
+}
+
+.show-password-btn svg {
+  width: 24px;
+  color: #5ac4f9
 }
 
 .profile-img {

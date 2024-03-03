@@ -34,7 +34,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         } else if (error.status === 418) {
             return response
         } else {
-            api.dispatch(setNotificationMessage(error?.data?.message || error?.data || ""))
+            api.dispatch(setNotificationMessage(error.data?.message || error?.message || ""))
             api.dispatch(showNotification(true))
             api.dispatch(logOut());
             // return response
